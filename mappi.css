@@ -1,0 +1,223 @@
+body {  
+	margin: 0.5em 0.5em 3em 0.5em;
+	font-family: Verdana, Arial, Helvetica, Sans-Serif; 
+	background-color: white;  
+	color: black;
+}
+
+h1, h2, h3 {
+	font-weight: bold;
+}
+h1 { font-size: 120%; }
+h2 { font-size: 110%; }
+h3 { font-size: 100%; }
+
+p { margin: 0 0 0.5em 0; }
+
+dt { 	
+	margin: 0.2em 0em 0em 0em;
+}
+
+dd {
+	margin: 0 0 0 2em;
+}
+
+.kohdedata, .kohdeliitedata {
+	padding: 0.2em 0.5em;
+	margin-bottom: 0.5em;
+	border: 1px solid silver;
+	background-color: #F1F4F8;
+}
+
+td {	
+	padding: 3px 
+}
+
+a { 
+	text-decoration: none; 
+	color: navy;
+}
+
+a:hover { 
+	color: blue;
+	text-decoration: underline;
+}
+
+table.qtable {
+	width: 99.5%;
+	border-collapse: collapse;
+	empty-cells: show;
+}
+
+.qtable th {
+	font-weight: normal;
+	text-align: center;
+	border-top: 1px solid navy;
+	border-bottom: 1px solid navy;
+	background-color: #D7DFE7;
+}
+.qtable td {
+	border-right: 1px solid silver;
+	border-left: 1px solid silver;
+	padding: 0 0.3em;
+}
+.qtable tr.even td {
+	background-color: #D7DFE7;
+}
+
+.nappi {
+	background-color: #EEE;
+	border-width: 1px;
+        border-style: solid;
+	border-color: silver;
+	padding: 0;
+	line-height: 1.5;
+}
+
+.error {
+/*	mihin t‰t‰ tarvittiin? */
+/*	float: left; */
+	color: red;
+	background-color: yellow;
+	border: 2px solid red;
+	padding: 0.3em;
+}
+
+/* Tummemmalla taustalla erotetut laatikot */
+#titlebar, #menu, #statusbar {
+	border-width: 1px;
+	border-style: solid;
+	border-color: navy;
+	/* inset
+	border-color: #25282B #E3E9F0 #E3E9F0 #25282B;
+	*/
+
+	background-color: #D7DFE7;
+	padding: 0.3em;
+}
+
+#titlebar {
+	margin-bottom: 1em;
+	clear: both;
+}
+
+#path, #username{
+	display: inline;
+}
+
+#langset {
+	display: inline;
+	border-left: 1px solid navy;
+	padding-left: 1em;
+	margin-left: 0.5em;
+}
+
+#menu {
+	margin: 0 0 0.5em 0;
+}
+
+#menu ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#menu ul li {
+	display: inline;
+	margin: 0 0.3em;
+}
+
+#menu ul li.sep-after {
+/*	margin-bottom: 0.5em; */
+	border-right: 1px solid navy;
+	padding-right: 1em;
+}
+
+#view {
+	margin-right: 16em; 
+/*	overflow: auto; */
+}
+
+#tools {
+	position: absolute;
+	right: 0.5em;
+	width: 15em;
+	padding: 0 0 3em 0;
+}
+
+.controlgroup {
+	min-width: 14em;
+	padding: 1.5ex 0.3em 0.3em 0.3em;
+	margin: 0 0 1em 0;
+	border: 1px solid black;
+}
+
+.controlgroup form {
+	margin: 0 0 0.3em 0;
+	padding: 0;
+}
+
+.controlgroup input {
+	max-width: 14em;
+}
+
+#statusbar {
+	position: fixed;
+	left: 0.5em;
+	right: 0.5em;
+	bottom: 0.5em;
+}
+
+/* Helpeiss‰ k‰ytetyt muotoilut */
+div.textarea {
+	width: 80%;
+/* pit‰‰ olla <pre> t‰m‰n sijasta, IE:n bugi */
+/* http://jehiah.com/archive/ie-printing-bug */
+/*	font-family: monospace; */
+/*	white-space: pre; */
+	padding: 2px;
+	margin: 1em;
+	border-width: 2px;
+	border-color: black silver silver black;
+	border-style: solid;
+}
+
+div.esimerkki {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 80%;
+	padding: 2px;
+	margin: 1em;
+	border: 2px dotted silver;
+}
+
+div.esimerkki p {
+	margin-left: 1em;
+}
+
+div.esimerkki h2, div.esimerkki h3 {
+        font-weight: bold;
+        text-decoration: none;
+	font-style: normal;
+        margin: 10px 0px 0px 1em;
+}
+div.esimerkki h2 {
+        color: #232C63;
+        font-size: 120%;
+}
+div.esimerkki h3 {
+        color: #303030;
+        font-size: 110%;
+}
+
+div.esimerkki ul {
+	list-style:     circle outside;
+}
+
+@media print {
+	#menu, #statusbar, #tools {
+		display: none;
+	}
+	#view {
+		margin-right: 0;
+	}
+}

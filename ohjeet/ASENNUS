@@ -1,0 +1,60 @@
+Mapin asennus
+-------------
+
+0) Oletuksena on toimiva MySQL ja Apache, jossa php4, >= 4.1.0
+
+1) Pura asennuspaketti paikkaan, jossa haluat järjestelmän tiedostoja
+   pitää (jatkossa /mappi/dir/).  Mielellään ei kuitenkaan
+   web-kansioon.  Entrypoint käyttöliittymää varten luodaan haluttuun
+   web-kansioon erikseen.
+
+Uuden tietokannan luonti
+------------------------
+
+1) Luo uusi tyhjä tietokanta (jatkossa 'mappikanta')
+
+	shell> mysql --user=root --password
+	Enter password: ****
+	mysql> CREATE DATABASE mappikanta;
+	mysql> exit
+
+2) Luo käyttäjä (jatkossa nimi 'mappikayttaja' ja salasana 'salasana'),
+   jolla on SELECT, INSERT, DELETE ja UPDATE oikeudet äsken luomaasi
+   tietokantaan tai anna kyseiset oikeudet jollekin toiselle
+   käyttäjälle.
+
+	shell> mysql --user=root --password
+	Enter password: ****
+	mysql> GRANT UPDATE,DELETE,INSERT,SELECT ON mappikanta.* TO mappikayttaja@localhost IDENTIFIED BY 'salasana';
+	mysql> FLUSH PRIVILEGES;
+	mysql> exit
+
+3) Aja luomassasi tietokannassa SQL-komentosarja mappi_taulut.sql
+   käyttäjänä, jolla on CREATE oikeudet kyseiseen tietokantaan.
+
+	shell> mysql --user=root --database=mappikanta --password < /mappi/dir/skriptit/mappi_taulut.sql
+	Enter password: ****
+
+4) Aja luomassasi tietokannassa SQL-komentosarja mappi_perustiedot.sql
+   kohdassa 2 luomanasi käyttäjänä.
+
+	shell> mysql --user=mappikayttaja --database=mappikanta --password < /mappi/dir/skriptit/mappi_perustiedot.sql
+	Enter password: ****
+
+Uuden käyttöliittymän luonti
+----------------------------
+
+1) Luo web-kansio, jota kaytta haluat käyttöliittymän näkyvän
+   (jatkossa /entry/point/dir/).
+
+2) Siirry kyseiseen kansioon
+
+	cd /entry/point/dir/
+
+3) Aja skriptit -kansiosta löytyvä komentosarja luo_entrypoint.sh ja
+   anna parametrina Mapin sijaintikansio.
+
+	/mappi/dir/skriptit/luo_entrypoint.sh /mappi/dir
+
+4) Muuta asetustiedostosta /entry/point/dir/mappi_rc.php tietokanta
+   -otsikon alta löytyvät asetukset kohdalleen.

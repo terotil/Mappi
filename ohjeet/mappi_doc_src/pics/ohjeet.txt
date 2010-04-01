@@ -1,0 +1,17 @@
+Dokumentissa käytettyjen ruudunkaappausten valmistaminen ja muunto
+eps-muotoon Photoshopin avulla.
+
+1) Ruudunkaappaus
+2) Kursori "E:\save\personal\kuvia\räpylä.psd"
+3) Flatten
+4) Grayscale
+5) Summittainen crop
+6) Valitse taikasauvalla ulkopuoli
+7) Invert selection, Crop
+8) Image size
+	Ei resample
+	150 dpi
+9) Save As
+	näkymä_tarkennus.eps
+	Ei preview
+	Binary

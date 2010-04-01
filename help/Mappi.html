@@ -1,0 +1,307 @@
+<html>
+<head>
+<title>Mappi</title>
+<body>
+
+<p>Mappi on tietovarastointia varten kehitetty järjestelmä.  Se
+koostuu ylläpitokäyttöliittymästä (jota parasta aikaa käytät) ja
+tietokannasta.  Tietokantaan on tallennettuna varastoidun tiedon
+rakenne ja itse varastoitu tieto.</p>
+
+<h1>Tietokannan rakenne</h1>
+
+<p>Mappia käyttäen voidaan varastoida tietoa esim. organisaatioista,
+asiakirjoista, henkilistä, uutisista, tapahtumista sekä edellisiin
+liittyvistä lisätiedoista ja ennenkaikkea tietojen keskinäisistä
+suhteista. Tietoja voivat oikeutetut henkilöt vapaasti
+ylläpitokäyttöliittymän kautta muokata.</p>
+
+<p>Tietokantaan tallennetun tiedon rakenteen sisäistäminen
+mahdollistaa MAPPI-järjestelmän täysipainoisen hyödyntämisen.
+Tietokannan rakenne on kolmitasoinen. Ylimmän tason tallennusyksiköitä
+kutsutaan kohteiksi. Tietosisältönä kohde vastaa yhtä esinettä/asiaa.
+Kohteita tietokannassa voisivat olla esim. yritys, henkilö, uutinen ja
+pöytäkirja. Toisen tason tallennusyksiköitä kutsutaan liitetiedoiksi.
+Tietosisältönä liitetieto vastaa yhtä kohteen ominaisuutta.
+Liitetietoja voisivat olla mm. osoite, puhelinnumero, toimiala tai
+julkaisija. Kolmannelta tasolta löytyvät liitetiedon teksti,
+voimassaoloaika eli jaksot, viittaukset muihin kohteisiin ja
+liitetiedostot. </p>
+
+<p>Tietokannan sisältö voisi olla esim. seuraavan kaltainen:</p>
+
+<ul>
+<li>Erkki Esimerkki
+<ul>
+<li>Sähköpostiosoite
+<ul>
+<li>erkki@esimerkki.net.invalid
+</ul>
+</ul>
+<li>Kelju K. Kojootti
+<ul>
+<li>Kotisivu
+<ul>
+<li>http://www.kojootti.invalid/keljukoo/
+</ul>
+<li>Sähköpostiosoite
+<ul>
+<li>keljukoo@kojootti.invalid
+</ul>
+</ul>
+<li>Avoin yhtiö Kelmit
+<ul>
+<li>Yhtiömiehet
+<ul>
+<li>Viittaukset: Erkki Esimerkki, Kelju K. Kojootti
+</ul>
+<li>Kotipaikka
+<ul>
+<li>Ankkalinna
+</ul>
+</ul>
+</ul>
+
+<p>Jokaisella kohteella on kaksi yksilöivää tietokenttää.  Henkilöillä
+nämä voisivat olla etunimi ja sukunimi ja uutisilla otsikko ja
+julkaisupäivä.  Yritysten tapauksessa (nimen lisäksi) toista
+yksilöivää kenttää välttämättä tarvitsisi käyttää lainkaan tai se
+voisi olla esim. Y-tunnus.  Yksilöivien kenttien lisäksi jokaisella
+kohteella on yksi sisältökenttä, johon voidaan tallentaa
+vapaamuotoista sisältöä ja jonka muokkaus riippuu sisältömuodosta ja
+järjestelmään rekisteröidyistä muokkaimista.</p>
+
+<h1>Käyttöliittymä</h1>
+
+<p>Ylläpitokäyttöliittymä on toteutettu käyttäen standardeja
+www-tekniikoita, jotka eivät vaadi käyttäjän tietokoneelta mitään
+erityistä . Ylläpito on käytettävissä kaikkialla, missä vain julkinen
+WWW-sivusto toimii.
+
+<p>WWW-tekniikka mahdollistaa ylläpidon käytettävyyden lähes miltä
+tahansa tietokoneelta, mutta asettaa myös käytölle tiettyjä
+rajoituksia, jotka on hyvä pitää mielessä. Yhteyden luotettavuus ja
+nopeus riippuu täysin käyttäjän tietokoneen ja Mappi-palvelimen
+välisen Internet-yhteyden vastaavista ominaisuuksista.
+Toimintavarmuudesta- ja nopeudesta ei siten valitettavasti voi antaa
+minkäänlaisia takeita.
+
+<p>Erityisesti pidempiä tekstejä kirjoittaessa kannattaa toimia siten,
+että tallentaa tekstin ensiksi paikallisesti käyttämälleen
+tietokoneelle ja vasta sen jälkeen ylläpitojärjestelmän avulla
+tietokantaan.
+
+<h2>Käyttöliittymän osat</h2>
+
+<p><em>Valikkorivi</em> on käyttöliittymän näytön ylimmäinen vaakasuora palkki.  Valikkoriviltä löydät seuraavat toiminnot.
+
+<ul>
+<li> Pääsivu : Siirry ylläpitokäyttöliittymän pääsivulle
+  <li> Tietokanta : Tietokannan sisällön näyttävä kohdelista. Tätä kautta tapahtuu tiedon selaaminen ja muokkaus.
+  <li> Raportit : Erityistarkoituksia varten laaditut raportit ja toiminnot.
+  <li> Asetukset : Tietokannan rakenteeseen ja käyttöön vaikuttavat asetukset.
+  <li> Ohjeet : Järjestelmän on-line käyttöohjeet.
+  <li> Lopeta : Kirjautuminen ulos järjestelmästä. 
+</ul>
+
+<p><em>Otsikkorivi</em> on käyttöliittymän näytön toiseksi ylimmäinen
+vaakasuora palkki. Se kertoo näkymän sisällön ja toimintojen
+vaikutusalueen.  Voit siirtyä tietystä näkymästä kaikkiin ylemmän
+tason näkymiin suoraan klikkaamalla otsikkoriviltä haluamaasi tasoa.
+
+<p><em>Työkalupalkki</em> on käyttöliittymän oikeassa laidassa.
+Otsikkorivin osoittamassa kontekstissa käytettävissä olevat toiminnot
+tulevat näkyviin sinne.  Työkalupalkki voi olla myös tyhjä.
+
+<p><em>Tilarivi</em> on käyttöliittymän näytön alin alareunan
+vaakasuora palkki. Se näyttää tietoja sovelluksen tilasta. Tilarivillä
+on aina vasemmalla näkyvillä kirjautut käyttäjä.
+
+<h1>Tiedon selaus ja muokkaus</h1>
+
+<h2>Kohdelista</h2>
+
+<p>Tietokannan sisältönäkymään eli kohdelistaan pääsee "tietokanta"
+painikkeella.  Kohdelistalla työkalupalkissa on ensimmäisenä
+hakulomake, jonka avulla rajataan näytettävät kohteet.  Rajauksen voi
+tehdä nimen, ryhmän ja kerralla näytettävän määrän perusteella.  Nimeä
+haetaan välilyönnillä yhdistetyistä yksilöivistä kentistä, eli haku
+"ki Es" löytää henkilön, jonka etunimi on "Erkki" ja sukunimi
+"Esimerkki".  
+
+<p>Työkalupalkissa hakulomakkeen alla olevilla painikkeilla voi selata
+listaa, mikäli haun tuloksia oli enemmän, kuin näytettävä
+maksimimäärä.
+
+<p>Työkalupalkissa alinna on uuden kohteen lisäys.  Uutta kohdetta
+lisättäessä valintalista poimitaan lisättävän kohteen ryhmä ja
+klikataan "Lisää".  Kun olet klikannut "Lisää", seuraavaksi tulee
+näkyviin kohteen perustietojen muokkaus.  Tässä vaiheessa uusi kohde
+on jo lisätty tietokantaan!  Jos lisäsit kohteen epähuomiossa, klikkaa
+ensin "Tallenna" ja sitten "Poista".</p>
+
+<p>Kohdenäkymään (ks. seuraava kappale) pääsee klikkaamalla
+ensimmäisen tai toisen sarakkeen teksteistä kumpaa tahansa.</p>
+
+<h2>Kohdenäkymä</h2>
+
+<p>Kohteen poisto löytyy työkalupalkista. Poisto on peruuttamaton!
+Kerran poistettua kohdetta ei saa takaisin mitenkään. Kohde, johon on
+viittauksia, on kuitenkin suojassa poistolta, joten viittauksia ei saa
+kohteita poistamalla vahingossa rikottua.</p>
+
+<p>Näkymän otsikoista ensimmäinen ja viimeinen ovat erikoistapauksia,
+koska niiden alla näkyvät tiedot eivät ole liitetietoja.</p>
+
+<h3>Perustiedot</h3>
+
+<p>"Perustiedot" -otsikko ja sen alla olevat seitsemän alaotsikkoa
+ovat näkyvillä aina. Jokaisella kohteella on ainakin nämä
+tiedot. "Perustiedot" -otsikon alla olevien kentistä toinen, kolmas
+(ns. yksilöivät kentät) ja viimeinen (ns. sisältökenttä) vaihtavat
+nimeään sen mukaan mihin ryhmään kohde kuuluu.  "Nimi raporteissa" on
+kohteen julkinen nimi, joka muodostetaan yksilöivistä kentistä
+tiettyjen muodostussääntöjen perusteella.
+
+<p>Sisältökentän muokkaus ja käsittely riippuu valitusta
+sisältömuodosta.  Sisältömuodon voi valita vapaasti vain sisältökentän
+ollessa tyhjä.  Muulloin sisältömuotoa voi muuttaa ainoastaan käytössä
+olevien muunninten mahdollistamilla tavoilla.  Käytettävissä olevat
+muunnokset näkyvät perustietojen muokkaussivulla työkalupalkissa.
+
+<p>Perustietojen muokkauslomakkeelle pääsee klikkaamalla "Perustiedot"
+-otsikkoa. Muokkauslomakkeen ulkoasu saattaa vaihdella sen mukaan
+mihin ryhmään kohde kuuluu.
+
+<h3>Liitetiedot</h3>
+
+<p>Ensimmäisen ja mahdollisesti viimeisen pääotsikkon alaotsikkoja
+lukuunottamatta ovat alaotsikot yksittäisiä liitetietoja, jotka on
+ryhmitelty pääotsikoiden alle sen mukaan mihin ryhmään ne
+kuuluvat. Liitetiedon muokkausnäkymään pääsee klikkaamalla liitetietoa
+vastaavaa alaotsikkoa, eli liitetiedon nimeä. Esim. seuraavan kuvan
+näyttämään näkymään on päästy edellisestä klikkaamalla "Kotisivu"
+-tekstiä. </p>
+
+<p>Näkymän vasemmassa ylänurkassa liitetiedon lisäyspainike ja uuden
+liitetiedon tyyppivalinta. Valitun tyypin mukaan saattavat
+lisäyspainikkeen käynnistämät toiminnot ja lomakkeet hieman poiketa
+toisistaan. </p>
+
+<h3>Viittaukset muista kohteista</h3>
+
+<p>Viimeisen "Viittaukset muista kohteista" -otsikon alla on
+lueteltuna kaikki kohteet, joista on viittauksia näytettävään
+kohteeseen. Viittaavat kohteet on lajiteltu eri otsikoiden alle sen
+mukaan minkä tyyppisessä liitetiedossa viittaus on. Viittaavan kohteen
+kohdenäkymään pääsee klikaamalla kohteen nimeä. Mikäli näytettävään
+kohteeseen ei ole viittauksia, ei myöskään "Viittaukset muista
+kohteista" -otsikkoa ole näkyvillä.
+
+<h2>Liitetiedon muokkausnäkymä</h2>
+
+<h3>Vapaa teksti</h3>
+
+<p>Vapaa teksti -kenttä on tarkoitettu tekstimuotoiselle tiedolle tai
+muun tiedon (ks. jaksot, viittaukset ja tiedostot) merkityksen
+tarkentamiseen. Kenttään kirjoitettu teksti tallentuu tietokantaan
+"tallenna teksti" -painikkeella. Samalla kentän koko mukautuu
+kirjoitetun tekstin pituuden mukaan. Tallennuspainiketta ei voi
+käyttää liian usein!
+
+<p>Kentän muokkaus ja käsittely riippuu valitusta sisältömuodosta.
+Sisältömuodon voi valita vapaasti vain kentän ollessa tyhjä.  Muulloin
+sisältömuotoa voi muuttaa ainoastaan käytössä olevien muunninten
+mahdollistamilla tavoilla.  Käytettävissä olevat muunnokset näkyvät
+liitetiedon muokkaussivulla työkalupalkissa.
+
+<h3>Viittaukset</h3>
+
+<p>Viittaukset muihin kohteisiin lisätään kirjoittamalla
+tekstikenttään viitattavan kohteen nimi (tai osa siitä) ja painamalla
+"Lisää viittaus" -painiketta. Olemassa oleva viittaus näkyy siten,
+että viitattujen kohteiden nimet näkyvät listana "Viittaukset"
+-otsikon alaisen tekstikentän alla.
+
+<p>Mikäli viittausta luotaessa tekstikenttään annettu nimi (tai sen
+osa) vastasi useita tietokannassa olevia kohteita tai ei ainuttakaan
+kohdetta tai tekstikenttä oli tyhjä, tulee seuraavaksi näyttöön
+kohteen valintanäkymä, jonka kautta viitattava kohde haetaan ja
+kohteen nimeä klikkaamalla luodaan itse viittaus (valintanäkymä toimii
+samalla tavoin, kuin kohdelista).
+
+<p>Viittaus poistetaan klikkaamalla viitatun kohteen nimen perässä
+olevaa "poista viittaus" -linkkiä.
+
+<h3>Jaksot</h3>
+
+<p>Jakso lisätää kirjoittamalla halutut alkamis- ja päättymishetket
+päiväyskenttiin (kenttien järjestys on päivä - kuukausi - vuosi -
+tunti - minuutti), valitsemalla toisto, valitsemalla listasta onko
+kyseessä mukaanlukeva (liitetieto on voimassa annettujen ajankohtien
+välillä) vai poislukeva (liitetieto on voimassa muulloin, muttei
+annettujen ajankohtien välillä) jakso ja klikkaamalla "Lisää jakso"
+-nappia.
+
+<p>Tyhjäksi jätetyn kentän arvoksi tulkitaan nolla. Jos ajankohdan
+kaikkien kenttien arvo on nolla (eli ne on jätetty tyhjiksi) saa
+alkuaika pienimmän mahdollisen arvon ja loppuaika suurimman. Jos
+esim. alkuajan kentät jätetään tyhjäksi, loppuaikaan kirjoitetaan
+1.4.2002 (jättäen kellonaika tyhjäksi) ja valitaan mukaanlukeva
+tyyppi, tulkitaan liitetiedon olevan voimassa 1.4.2002 klo 00:00
+saakka. Kyseinen viittaus näkyy seuraavanlaisena tekstinä: "13.12.1901
+klo 22:25 - 01.04.2002 klo 00:00 Mukaanlukeva (poista)"
+
+<p>Toistoissa päiväyskenttiin syötetty jakso on lisättävistä jaksoista
+ensimmäinen.  Toistomäärä määrittelee sen, montako jaksoa
+<em>kaikkiaan</em> lisätään.  Valinnat <em>"Ei toistu"</em>, ja
+<em>"Toistuu päivittäin" 1 kertaa</em> ovat siis täsmälleen sama asia.
+Mikäli toistomäärä on 2 tai enemmän mappi tuottaa pyydetyn määrän
+jaksoja kopioimalla ensimmäistä toistovalinnan mukaan joko yhden
+vuorokauden tai yhden viikon välein.
+
+<p>Viittaus poistetaan klikkaamalla viittauksen perässä olevaa
+"(poista)" -linkkiä.
+
+<p>Jos haluat tehdä viittaukseen pienen korjauksen, poista se ja lisää
+uusi korjattu.  Poistetun viittauksen ajat kopioituvat automaattisesti
+viittauksen lisäyslomakkeelle, joten kaikkea ei tarvitse kirjoittaa
+uudelleen.
+
+<h3>Tiedostot</h3>
+
+<p>Tiedostot lisätään painamalla ensiksi "Selaa" painiketta,
+valitsemalla lisättävä tiedosto ja painamalla sen jälkeen "Lisää"
+-painiketta. Painikkeen painamisen ja lisätyn tiedoston ilmestymisen
+välinen aika saattaa olla hyvinkin pitkä, koska tuolla välillä
+tiedosto siirretään koneeltasi Mappi-palvelimelle. Mikäli yhteystapa
+on hidas (esim. modeemi) on varsin tavallista, että
+tekstinkäsittelyohjelman tallentaman asiakirjan siirto kestää noin
+minuutin verran.</p>
+
+<p>Listatun tiedoston voit ladata omalle koneellesi klikkaamalla
+tiedoston nimeä. </p>
+
+<p>Listattu tiedosto poistetaan kuten aikaisemmatkin tietotyypit, eli
+klikkaamalla tiedoston perässä olevaa 'poista' -linkkiä.</p>
+
+<h2>Päiväyskentät</h2>
+
+<p>Kohteen päiväyksiä ja jaksoja muokatessa päivämääräkenttien arvot
+voi joko kirjoittaa näppäimistöllä päiväyskenttään oikeassa muodossa
+tai valita kalenterilehdeltä.  Kalenterilehden saa esiin valitsemalla
+päivämääräkentän tai klikkaamalla kentän perässä olevaa
+kalenterikuvaketta.  Kalenterilehti sulkeutuu kun päivämäärä on
+valittu, kun kohdistus suurretään toisaalle päivämääräkentästä tai kun
+kalenterikuvaketta klikataan toiseen kertaan.</p>
+
+<p>Päiväysten muoto päiväyskentässä tulee olla <tt>VVVV-KK-PP</tt>,
+eli ensin vuosi neljällä numerolla, väliviiva, kuukausi kahdella
+numerolla, väliviiva ja lopuksi päivä kahdella numerolla.
+Kalenterilehdeltä valittaessa muoto tulee automaattisesti oikein.
+Oikea muotoilu on muistettava jos kalenterilehti ei jostain syystä ole
+käytettävissä tai muutoin halutaan kirjoittaa päiväys suoraan.</p>
+
+
+</body>
+</html>

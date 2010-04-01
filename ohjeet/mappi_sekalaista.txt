@@ -1,0 +1,59 @@
+K‰ytt‰j‰tunnukset ja oikeudet
+-----------------------------
+
+Kirjautuvalla kohteella on "login" -liitetieto, joka kuuluu
+"Administrative" -ryhm‰‰n.  Loginin data on '<uname>tunnus</uname>
+<pw>kryptattu salasana</pw>', tai '<ntdomain>domainnimi</ntdomain>'.
+Loginissa on viittaus "Administrative" -ryhm‰‰n kuuluvaan kohteeseen,
+joka on k‰yttˆoikeusprofiili.  Sen data on '<read>*</read>
+<write>2,5</write>', eli * (kaikki) tai valmiit inlistit ryhmist‰,
+jotka ovat n‰kyvill‰ ja muutettavissa.
+
+Temppujen j‰rjestys
+-------------------
+
+mappi_rc.php
+Perusasetukset ja yksi funktio (script_name), jota tarvitaan jo
+asetuksia tehdess‰.
+
+mappi_lib.php
+Funktiom‰‰rittelyj‰ ja tietokantafunktioiden include.
+
+mappi_headers.php
+Session palauttaminen (session_start())
+Tarkistetaan, onko k‰ytt‰j‰ kirjautunut
+Yhdistet‰‰n tietokantaan
+Asetetaan kakutus (pois)
+
+mappi_html-head.php
+Sivun otsikkotiedot
+
+mappi_html-body-begin.php
+Sivun body-osan alku
+
+Huomioitavaa
+------------
+Upload:
+ o mysql pakettikoko tarpeeksi suureksi
+ o php -skriptin maksimisuoritusaika
+ o php:n muistim‰‰r‰ 'memory_limit'
+ o php:n uploadraja 'upload_max_filesize'
+
+php.ini
+ o include_path = ".:/usr/lib/php4"  ; UNIX
+ o include_path = ".;C:\OHJELM~1\PHP4\LIB"  ; WIN
+ o magic_quotes_gpc = On, magic_quotes_runtime= Off
+
+Jaksot
+------
+onko 'in' jaksoja?
+     kuuluuko p‰iv‰ys johonkin jaksoista?
+     muuten
+          ei voimassa
+
+onko 'ex' jaksoja?
+     kuuluuko p‰iv‰ys johonkin jaksoista?
+          ei voimassa
+     muuten
+
+on voimassa

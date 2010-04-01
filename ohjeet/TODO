@@ -1,0 +1,93 @@
+Mappi 2, todo, $Id: TODO,v 1.6 2007/02/24 00:59:05 mediaseitti Exp $
+
+Dokumentaatio
+-------------
+
+Kaikki pitäisi olla lontooksi.
+
+Dokkarien päivitys, vanha roskiin.
+
+
+Asennus ja apuvälineet
+----------------------
+
+
+Käyttöliittymä ja tietokanta
+----------------------------
+
+Kontekstihelppi getcontexthelp('liite', $liite);
+
+kieliversioinnista myös ohjeisiin
+
+Virheraportointiin __FILE__ ja __LINE__
+
+Listojen järjestäminen otsikoita klikkailemalla
+
+Uuden kohteen lisäykseen "keskeytä" tai "peruuta" -nappi, joka
+kyselemättä poistaa lisätyn tyhjän kohteen.
+
+Voisi olla hyvä idea vakioida vähän id:tä pienestä päästä.
+Erityisesti "Yhteystiedot" ja kyseiseen ryhmään kuuluvat perusjutut
+(puh, fax, email, web).  Voisi jättää jonkun välin vakioiduille
+tiedoille.
+
+Viittauksen tekeminen uuteen kohteeseen.  Lisää viittaus -> Lisää uusi
+kohde ryhmään.  Kohde syntyy kuten ennenkin, mutta lisäksi siihen
+syntyy jo valmiiksi viittaus liitetiedosta, josta lähdettiin
+liikkeelle.  Vaatii muutoksia kohdelistaan ja kohteen lisäykseen.
+
+Kunnollinen muutoshistoria.
+
+Joku parannus oikeuksiin.  Mahd. kumuloituvat oikeudet.  Monen
+oikeusryhmän loginilla on kaikkien ryhmien oikeudet.
+
+Loginia lisätessä pitää tarkistaa, ettei toista samanlaista ole jo
+olemassa.  Kirjautumistunnusten yksikäsitteisyys kun on hyvä taata.
+
+Uuden kohteen lisäysformille matkaan pari pikakenttää?
+
+Useimmin lisätyille liitetiedoille pitää olla pikanamiskat?
+(lokeista selville ja jonnekin talteen mitä lisätään eniten?)
+
+Jaksojen timestampit kantaan numeroina?  Homma yksinkertaistuisi
+tietokantapäässä huomattavasti.  Siirrettävämpää koodiakin tulisi.
+
+Jaksojen haussa voisi kirjoittaa unix timestamppiin muuntamisen vasta
+kyselyn jälkeen.  mysql:n unix_timestamp ei toimi oikein.
+
+Kaikkien poistosivujen pitää käydä paluupino läpi ja siivota sieltä
+pois viittaukset hävitettyyn asiaan.
+
+Autentikointi NT-domainista
+
+Kohteiden, liitteiden (mahdollisesti myös jaksojen ja viittausten)
+poistot kääntämällä id -kentät (kohde: ryhmaid, kohde_liite: kohdeid,
+liiteid, viittaus: molemmat, jakso: kohde_liiteid, tiedosto:
+kohde_liiteid) negatiivisiksi.  Lisäksi tietenkin 'Roskakori', joka
+näyttää negatiivisilla id -viittauksilla varustetut ölliäiset.
+(entä toteutus roskakori-tauluilla?)
+
+Virheenkäsittely pitää saada asialliseksi.  Oikeat virheluokat ja
+mahdollisesti toipuminen, jos onnistuu.  Viestien 'tiedosto::funktio()
+: virheen kuvaus' heitto trigger_error() funktiolla.
+
+Sivujen ulkoasu toimimaan phplib -templateilla tai smartyllä.
+Tulostusfunktioista saadaan edes jokseenkin järkevää ja html:n
+tulostaminen loppuu.
+
+Kohteiden, liitteiden, jaksojen... kopiointi "leikepöydän" avulla.
+Tallennus olioina/taulukoina sessiodataan?
+
+quotegps -funktio, joka haistaa lainausmagian ja lisää lainaukset, jos
+se ei ole päällä.
+
+Poistojen vahvistukset tapahtumaan poistettavan asian näyttävällä
+lomakkeella, jolloin poistettava asia näkyy aina kontekstissa
+kokonaisena.  Poistonappi sama.  Varmistuspyyntö virheilmoituksena
+tjsp.
+
+Siivoa deprecated-funktiot pois käytöstä
+
+array_haskey -> array_key_exists
+
+Tiedostojen käännösten käsittely

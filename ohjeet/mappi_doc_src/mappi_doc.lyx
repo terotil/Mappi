@@ -1,0 +1,5826 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 2.15
+\textclass article
+\begin_preamble
+\newcommand{\br}{\linebreak[0]}
+\newcommand{\nobr}{\nolinebreak[4]}
+\end_preamble
+\language finnish
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Title
+
+Mappi
+\layout Author
+
+Tero Tilus
+\layout Abstract
+\noindent 
+Tämä asiakirja on Mappi-tiedonhallintajärjestelmän tekninen kuvaus.
+ Se sisältää tiivistetyssä muodossa tiedot mapin käyttötarkoituksesta, perusrake
+nteesta, asennuksesta ja käytöstä.
+ Lisäksi se esittelee muutamia käytännön esimerkkejä järjestelmän käytöstä
+ sekä ajatuksia jatkokehityksestä.
+\layout Abstract
+\added_space_top medskip \added_space_bottom medskip \noindent 
+
+\series bold 
+\latex latex 
+
+\backslash 
+hfill
+\latex default 
+ Abstract
+\latex latex 
+ 
+\backslash 
+hfill
+\layout Abstract
+\noindent 
+This document is a technical description of an information management system
+ called Mappi.
+ It briefly describes the purpose, design, installation and usage of Mappi.
+ It also presents a few practical examples and ideas on further developement.
+ The rest of this document is available only in finnish.
+\layout Standard
+\pagebreak_bottom 
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset 
+
+
+\layout Section
+
+Johdanto
+\layout Standard
+
+Tyypillinen ongelma sirpaletiedon organisoinnissa, arkistoinnissa ja jakamisessa
+ on tiedonmurusten ominaisuuksien ja ennenkaikkea keskinäisten suhteiden
+ ennalta-arvaamattomuus.
+ Esimerkiksi organisaation sisäisessä tiedotuksessa metatieto on usein lähes
+ yhtä muuttuvaa kuin varsinainen tieto.
+ Syy on usein organisaation muuttuvissa tarpeissa.
+ Tiedotettavat ja arkistoitavat asiat saattavat organisaation muutosten
+ myötä muuttua hyvinkin tiuhaan tahtiin.
+ Tiedonhallintajärjestelmän tulisi kyetä vaivattomasti elämään muuttuvien
+ tarpeiden mukana.
+ 
+\layout Standard
+
+Mappi on järjestelmä, joka sisältää yleiseen tiedonhallintaan tarkoitetun
+ tietokantarakenteen ja sen web-käyttöliittymän.
+ Mappi-tiedonhallintajärjestelmä pyrkii vastaamaan muuttuvan metatiedon
+ asettamiin vaatimuksiin.
+ Tiedonhallintajärjestelmää parempi nimi mapille ehkä olisikin tiedon- ja
+ metatiedonhallintajärjestelmä.
+\layout Standard
+
+Tämän dokumentin toinen luku valottaa Mapin syntyyn ja kehitykseen vaikuttaneita
+ tekijöitä.
+ Kolmas luku antaa yleiskuvan arkkitehtuurista, jonka varaan Mappi on rakennettu.
+ Neljännessä luvussa käydään yksityiskohtaisesti läpi mapin rakenne ja toiminta.
+ Viides luku antaa Mapin ohjeet järjestelmän asentamiseen.
+ Kuudennessa luvussa esitellään yleisellä tasolla neljä Mapin käyttötapausta.
+ Seitsemäs ja viimeinen luku sisältää pohdintoja Mapin nykyisistä ongelmakohdist
+a ja jatkokehityssuunnista.
+\layout Subsection
+
+Merkinnöistä ja termeistä
+\layout Standard
+
+Muutamat tässä dokumentissa käyttämäni merkintätavat eivät välttämättä ole
+ yleisessä käytössä, siksi sananen myös niistä.
+\layout Quote
+
+Pidemmät esimerkit on erillistä esimerkkisovellutuksia käsittelevää kappaletta
+ (ks.
+ luku 
+\begin_inset LatexCommand \ref{sec: Esimerkkisovellutuksia}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Esimerkkisovellutuksia}
+
+\end_inset 
+
+) lukuunottamatta ladottu tämän kappaleen tapaan kapeampaan palstaan.
+\layout Standard
+
+Erotukseksi tavallisesta leipätekstistä on lyhyet lainaukset ohjelmakoodista,
+ kuten muuttujien ja funktioiden nimet, sekä tiedostonimet ladottu 
+\family typewriter 
+tasavälisellä
+\family default 
+ kirjasimella ja web-osoitteet 
+\family sans 
+päätteettömällä
+\family default 
+ kirjasimella.
+ 
+\layout Standard
+
+Tietokantataulun tietueet on merkitty hakasulkeisiin kirjoitettuna pilkkuerotelt
+una listana [3, 2, 1, 'hep'], jossa listan alkiot järjestyksessä vasemmalta
+ oikealle edustavat tietueen kenttien arvoja vastaavassa järjestyksessä.
+ Merkkijonot ovat 'yksinkertaisissa lainausmerkeissä' ja numerot ja symboliset
+ arvot ilman lainausmerkkejä.
+ Muualla kuin esimerkeissä, koodissa tai tietueissa merkkijonot on kirjoitettu
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+kaksinkertaisiin lainausmerkkeihin
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Terminologiasta on selvyyden vuosi mainittava se, että sanat 
+\begin_inset Quotes eld
+\end_inset 
+
+liitetietotyyppi
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset LatexCommand \index{liitetietotyyppi}
+
+\end_inset 
+
+ ja 
+\begin_inset Quotes eld
+\end_inset 
+
+liiteryhmä
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset LatexCommand \index{liiteryhmä}
+
+\end_inset 
+
+ merkitsevät täsmälleen samaa ja ovat keskenään vaihdannaisia.
+ Termin 
+\begin_inset Quotes eld
+\end_inset 
+
+liitetietotyyppi
+\begin_inset Quotes erd
+\end_inset 
+
+ käyttö on suositeltavaa, koska se on kuvaavampi.
+ Vanhempi 
+\begin_inset Quotes eld
+\end_inset 
+
+liiteryhmä
+\begin_inset Quotes erd
+\end_inset 
+
+ on käytössä lähinnä koodin dokumentoinnissa (suomenkielisiltä osin) ja
+ vanhemmissa teksteissä.
+\layout Section
+
+Historia
+\layout Standard
+
+Mapilla ei ole yksiselitteisiä alkua, lausuttuja syntysanoja tai projektia,
+ jonka tuotos se olisi ollut.
+ Tässä luvussa valotan Mapin syntymiseen vaikuttaneita seikkoja.
+\layout Subsection
+
+Monet juuret
+\begin_inset LatexCommand \label{sec: Monet juuret}
+
+\end_inset 
+
+
+\layout Standard
+
+Ehkäpä vanhin juurista on haapavetisen asianajaja Ville Jurvansuun kanssa
+ käydyissä keskusteluissa.
+ Mietimme asiakirjojen sähköisen arkistoinnin ongelmia.
+ Tuolloin sain erään käyttöliittymäsuunnitteluun liittyvän ajatuksen
+\begin_float footnote 
+\layout Standard
+
+Tietokantataulun sisällön esittäminen puurakenteena, jossa tasot ovat käyttäjän
+ määriteltävissä.
+\end_float 
+, joka ei sinällään liity tähän tarinaan mitenkään, mutta osiltaan antoi
+ ideoita mapin metatiedonhallintapuoleen.
+ Lupasin Villelle pohtivani asiaa ja mahdollisesti - jos jonkin harjoitustyön
+ yhteydessä sopiva tilanne tarjoutuisi - aloittavani sopivan ohjelmiston
+ kehityksen.
+ Tästä syystä Jukka-Pekka Santasen papereista löytyy joskus muinoin harjoitustyö
+ni aiheeksi merkitty 
+\begin_inset Quotes eld
+\end_inset 
+
+asiakirjojen sähköinen arkistointi
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Toinen merkittävä sysäys tuli gospelkuoro Tuluksen sisäistä tiedotusta -
+ erilaisten listojen ja aikataulujen ylläpitoa ja jakoa - suunnitellessa.
+ Pelkkä taulukkolaskentaohjelma makrokielineen kelpasi tarkoitukseen mainiosti
+ ja kelpaisi varmasti edelleenkin.
+ Matemaatikon täydellisyyttä tavoittelevaa mieltä kiusaavia ongelmia kuitenkin
+ ilmaantui.
+ Erään kuorolaisen kaksi puhelinnumeroa (ja tauluni yksi puhelinnumerokenttä)
+ jäivät kiusaamaan mieltäni sen verran pahoin, että lopulta päädyin pähkäilemään
+ ongelmalle ratkaisua.
+\layout Subsection
+
+Idea
+\layout Standard
+
+Varsin pitkän muhimisen jälkeen ajatukset loksahtivat kohdalleen ja idea
+ Mappi-tietokannan ytimenä toimivasta neljän taulun rakenteesta syntyi.
+ Ensimmäinen prototyyppi valmistui Tuluksen tietojen ylläpitoon
+\begin_inset LatexCommand \label{sec: proto_tulusyllapito}
+
+\end_inset 
+
+ ensimmäistä löytämääni tarkoitukseeni soveltuvaa työkalua hyödyntäen.
+ Tietokantarakenne ja sen web-käyttöliittymä valmistuivat muutamassa vuorokaudes
+sa.
+ Prototyyppi oli luonnollisesti täysin ylläpitokelvoton ja vaivalloisesti
+ siirrettävä, mutta tärkeintä oli todistaa itselleni, että ajatukseni todella
+ toimi.
+\layout Standard
+
+Uudelleenkirjoittamisen kautta tapahtuneesta huomattavasta siistiytymisestä
+ huolimatta toinen prototyyppi oli -- suurelta osin työkalusta johtuen --
+ edelleen vaivalloisesti räätälöitävä.
+ Hyödynsin prototyppiä silti lyhyen ajan sisään mm.
+ näytelmäroolipelin käsikirjoituksen ja kirjoittajatiimin sisäisen tiedotuksen
+ välineenä.
+\layout Subsection
+
+Kypsyminen
+\layout Standard
+
+Mappi on syntymästään lähtien kehittynyt kiinteästi sovellusten rinnalla
+ vastaamaan käytännön tarpeisiin.
+ Yksinkertaisesta perusrakenteesta ei kuitenkaan missään vaiheessa ole lipsuttu.
+ Mapin web-käyttöliittymä on edelleen säilyttänyt geneerisyytensä aivan
+ alkuperäisen ajatukseni mukaisesti.
+ Käyttöliittymä on siten tietosisällöstä riippumatta aina sama.
+ 
+\layout Standard
+
+Käytettävien työkalujen huolellisemman valinnan, tietokantarakenteen ja
+ käyttöliittymän toimintojen hiomisen ja huolellisemman ohjelmoinnin tuloksena
+ järjestelmän joustavuus, toimivuus ja siirrettävyys ovat asteittain parantuneet
+ ja tulevat edelleen parantumaan.
+\layout Subsection
+
+Summittainen päiväkirja
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center \LyXTable
+multicol5
+9 5 0 0 -1 -1 -1 -1
+0 0 0 0
+1 1 0 0
+0 1 0 0
+0 1 0 0
+0 1 0 0
+0 1 0 0
+0 1 0 0
+0 1 0 0
+0 1 0 0
+4 0 0 "" ""
+8 0 0 "" ""
+4 0 0 "" ""
+8 1 0 "" ""
+8 1 0 "" ""
+0 4 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 4 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 1 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+1 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+0 8 0 1 0 0 0 "" ""
+
+
+\newline 
+
+\newline 
+
+\newline 
+Tunteja
+\newline 
+Tehtävä
+\newline 
+6.1999
+\newline 
+-
+\newline 
+12.1999
+\newline 
+30
+\newline 
+Ensimmäiset ideat, pieniä prototyyppejä
+\newline 
+1.2000
+\newline 
+-
+\newline 
+6.2000
+\newline 
+50
+\newline 
+Arkistointijärjestelmän suunnittelu
+\newline 
+15.5.2000
+\newline 
+-
+\newline 
+20.5.2000
+\newline 
+40
+\newline 
+Kokonainen mappi-prototyyppi
+\newline 
+7.2000
+\newline 
+-
+\newline 
+8.2000
+\newline 
+120
+\newline 
+Prototyypin räätälöinti organisointikäyttöön
+\newline 
+6.2000
+\newline 
+-
+\newline 
+8.2000
+\newline 
+X
+\newline 
+Saatujen kokemusten kypsyttelyä
+\newline 
+
+\newline 
+
+\newline 
+9.2000
+\newline 
+80
+\newline 
+Uusi kokonainen prototyyppi
+\newline 
+10.1.2001
+\newline 
+-
+\newline 
+7.2001
+\newline 
+160
+\newline 
+Ensimmäinen täysi versio
+\newline 
+
+\newline 
+
+\newline 
+6.2001
+\newline 
+20
+\newline 
+Käyttäjän ohjeen laatiminen
+\layout Section
+
+Arkkitehtuuri
+\layout Standard
+
+Tässä luvussa tehdään yleiskatsaus Mapin tietovaraston ja käyttöliittymän
+ arkkitehtuuriin.
+\layout Subsection
+
+Tietovarasto
+\layout Standard
+
+Ollakseni rehellinen en johtoajatuksen muotoutuessa mielessäni edes tutkinut
+ muita vaihtoehtoja.
+ Relaatiotietokanta järjestelmän pohjarakenteena vastasi tarpeitani ja suunnitel
+miani vallan mainiosti.
+ Koska valinta ei toistaiseksi ole asettanut kehitystyön suhteen rajoitteita,
+ en edelleenkään ole vaivautunut tutkimaan vaihtoehtoja.
+\layout Standard
+
+MySQL 
+\begin_inset LatexCommand \cite{4}
+
+\end_inset 
+
+ tuli valituksi ikäänkuin sattuman kautta.
+ Työkaluja etsiskellessä sen Debian-paketti tuli ensimmäisenä vastaan.
+ Ominaisuudet olivat kohdallaan (transaktioita en silloin osannut kuvitella
+ tarvitsevani) ja ohjelmisto oli vapaa.
+ Lisäksi protoamiseen soveltuva yksinkertainen www-sql -kehitin 
+\begin_inset LatexCommand \cite{1}
+
+\end_inset 
+
+ tuki MySQL -tietokantaa.
+\layout Subsection
+
+Käyttöliittymä
+\layout Standard
+
+Prototyypin käyttökohteesta (ks.
+ luku 
+\begin_inset LatexCommand \ref{sec: proto_tulusyllapito}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: proto_tulusyllapito}
+
+\end_inset 
+
+) johtuen tuli luonnollisella tavalla valittua web-käyttöliittymä ja sitä
+ kautta CGI-tekniikka, eli dynaamiset web-sivut.
+ Jatkossa valinta osoittautui varsin hyvin kohdalleen osuneeksi.
+ Luonnolliset käyttökohteet ovat olleet yksinomaan web-projekteja.
+\layout Standard
+
+Prototyypin tein www-sql -kehittimellä.
+ Tuohon aikaan olin vastikään saanut pystyyn oman Linux-palvelimen testikäyttöä
+ varten ja www-tekniikat olivat varsin uusia.
+ Kyseisen kehittimen rajat tulivat vastaan jo prototyypin toista versiota
+ tehdessä ja käyttöliittymän ensimmäisen ominaisuuksiltaan täyden version
+ teinkin jo PHP:llä.
+ 
+\layout Standard
+
+PHP:n 
+\begin_inset LatexCommand \cite{2}
+
+\end_inset 
+
+ valinta työkaluksi oli varsin luonnollinen Apache 
+\begin_inset LatexCommand \cite{3}
+
+\end_inset 
+
+ -pal\SpecialChar \-
+ve\SpecialChar \-
+lin\SpecialChar \-
+oh\SpecialChar \-
+jel\SpecialChar \-
+mis\SpecialChar \-
+ton ja MySQL -tietokannan ollessa jo käytössä.
+ Kyseiselle yhdistelmälle saatavilla oleva tuki on laajasta käyttäjäkunnasta
+ johtuen varsin hyvä.
+ Lisäksi toimiva Apache + PHP + MySQL -arkkitehtuuri löytyy GNU/Linuxin
+ ja muiden Unixien lisäksi myös Windows-maailmasta.
+\layout Section
+
+Rakenne ja toiminta
+\layout Standard
+
+Tässä luvussa käydään läpi koko Mapin toiminta varsin yksityiskohtaisesti.
+ Mapin rakenteen ja toiminnan kuvaukselle on annettu paljon tilaa, koska
+ se on dokumentin olennaisin sisältö.
+ Tätä lukua lukiessa kannattaa rinnalla pitää näkyvissä ohjelmakoodi ja
+ taulumääritykset käsitellyiltä osin.
+\layout Subsection
+
+Tietokanta
+\layout Standard
+
+Tietokanta on Mapin sielu.
+ Se sisältää Mapin tietovaraston rakenteen ja olemuksen tiivistetyssä muodossa.
+ Tässä luvussa kuvataa Mapin tietokannan rakenne hyvin yksityiskohtaisella
+ tasolla.
+\layout Subsubsection
+
+Rakenne
+\begin_inset LatexCommand \label{Tietokannan rakenne}
+
+\end_inset 
+
+
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 136
+file pics/mappi_er.eps
+subcaption Tietokannan rakenne
+width 4 80.00
+flags 2
+
+\end_inset 
+
+
+\layout Caption
+
+Tietokantarakenne
+\begin_inset LatexCommand \label{fig: Tietokantarakenne}
+
+\end_inset 
+
+
+\end_float 
+Mapin tietokantarakenteen (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Tietokantarakenne}
+
+\end_inset 
+
+) metatason
+\begin_inset LatexCommand \index{metataso}
+
+\end_inset 
+
+ muodostavat taulut 
+\family typewriter 
+ryhma
+\family default 
+ ja 
+\family typewriter 
+liite
+\family default 
+.
+ Loput taulut ovat varsinaista tietosisältöä varten.
+ 
+\layout Standard
+
+Yksinkertaistetusti tietokannan sisällön voidaan ajatella muodostuvan asioista
+ ja niiden ominaisuuksista.
+ Jokainen asia on yksi 
+\family typewriter 
+kohde
+\family default 
+-taulun tietue ja jokainen asian (lisä)ominaisuus on 
+\family typewriter 
+kohde_liite
+\family default 
+ -taulun rivi.
+ Tietokannan terminologiassa asioita kutsutaankin kohteiksi
+\begin_inset LatexCommand \index{kohde}
+
+\end_inset 
+
+ ja asioiden ominaisuuksia liitetiedoiksi
+\begin_inset LatexCommand \index{liitetieto}
+
+\end_inset 
+
+.
+\layout Standard
+
+Jokainen kohde kuuluu täsmälleen yhteen ryhmään
+\begin_inset LatexCommand \index{ryhmä}
+
+\end_inset 
+
+ (yhden suhde moneen, 
+\family typewriter 
+ryhma
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+.ryhmaid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ kohde.ryhmaid
+\family default 
+).
+ Kohteen loogisesti yksilöivien
+\begin_float footnote 
+\layout Standard
+
+Tietokantatason teknisessä toteutuksessa yksilöinnin hoitaa luonnollisesti
+ 
+\family typewriter 
+kohde
+\family default 
+ -taulun ensisijainen avain, eli 
+\family typewriter 
+kohdeid
+\family default 
+ -kenttä.
+\end_float 
+ kenttien (
+\family typewriter 
+nimi, nimi2
+\family default 
+) ja tietokentän (
+\family typewriter 
+data
+\family default 
+) nimet määräytyvät kohteen ryhmän mukaan (
+\family typewriter 
+kohde_*
+\family default 
+ -kentät).
+ Jokaisella liitetiedolla on vastaavasti liitetietotyyppi
+\begin_inset LatexCommand \index{liitetietotyyppi}
+
+\end_inset 
+
+ (yhden suhde moneen, 
+\family typewriter 
+liite
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+.liiteid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ kohde_lii
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+te.liiteid
+\family default 
+).
+ Liitetiedon nimi määräytyy liitetietotyypin nimen (
+\family typewriter 
+liite.nimi
+\family default 
+) mukaan.
+ Näistä suhteista syntyy mappi-tietokannan perusrakenne.
+\layout Quote
+
+Oletetaan, että 
+\family typewriter 
+ryhma
+\family default 
+-taulussa on (kentät kaavion järjestyksessä) tietue [1, 'Henkilöt', 'Etunimi',
+ 'Sukunimi', 'Muuta', '-', '-'] ja 
+\family typewriter 
+kohde
+\family default 
+-taulussa tietue [42, 1, 'Tero', 'Tilus', '', 2001-09-10].
+ Nyt tietokannassa on siis henkilö, jonka etunimi on Tero ja sukunimi Tilus
+ ja josta ei muuta sanottavaa ole ollut.
+ Leima-kentän merkitys selviää myöhemmin.
+ Jos lisäksi oletetaan 
+\family typewriter 
+liite
+\family default 
+-tauluun tietue [2, 3
+\begin_float footnote 
+\layout Standard
+
+Liiteryhmän kuuluminen ryhmään jätetään tässä tarkoituksella avoimeksi,
+ koska sillä ei ole merkitystä perusrakenteen kannalta.
+\end_float 
+, 'Sähköpostiosoite'] ja 
+\family typewriter 
+kohde_liite
+\family default 
+-tauluun tietue [84, 42, 2, 'terotil@jyu.fi', 2001-09-11], tulkitaan merkitys
+ siten, että Tero Tiluksen sähköpostiosoite on terotil@jyu.fi.
+\layout Standard
+
+Mappi-tietokannan perusrakennetta on liitetietojen
+\begin_inset LatexCommand \index{liitetieto}
+
+\end_inset 
+
+ osalta laajennettu.
+ Jokaisella liitetiedolla voi olla useita viittauksi
+\begin_inset LatexCommand \index{viittaus}
+
+\end_inset 
+
+a (
+\family typewriter 
+viittaus.kohde_liiteid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ kohde_
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+liite.kohde_liiteid
+\family default 
+), tiedostoja
+\begin_inset LatexCommand \index{tiedosto}
+
+\end_inset 
+
+ (
+\family typewriter 
+tiedosto.kohde_liiteid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ kohde_lii
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+te.kohde_liiteid
+\family default 
+) ja jaksoja
+\begin_inset LatexCommand \index{jakso}
+
+\end_inset 
+
+ (
+\family typewriter 
+jakso.kohde_liiteid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ kohde_liite.kohde
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+_liiteid
+\family default 
+).
+ Viittaus merkitsee kahden kohteen välistä suhdetta, jonka merkitys määräytyy
+ viittauksen sisältävän liitetiedon mukaan.
+ Tiedostot ovat juuri sitä mitä voisi olettaakin.
+ Datan lisäksi tallennetaan alkuperäinen nimi ja mime-tyyppi.
+ Jaksot ovat aikatietoja.
+ Niiden looginen merkitys on ilmoittaa liitetiedon voimassaoloaika.
+ Liitetiedon laajennusten lisäksi perusrakennetta on kehitetty eteenpäin
+ vielä yhdeltä osin.
+ Jokainen liitetietotyyppi kuuluu täsmälleen yhteen ryhmään (yhden suhde
+ moneen, 
+\family typewriter 
+ryhma.ryhmaid 
+\begin_inset Formula \( \rightarrow  \)
+\end_inset 
+
+ liite.ryhmaid
+\family default 
+).
+ Näin saadaan liitetietotyypit koottua loogisiksi kokonaisuuksiksi.
+\layout Quote
+
+Edellinen esimerkki vaatii täydennystä liitetietotyypin tietokenttien merkityste
+n osalta.
+ Mainittujen lisäksi oletuksena oli, että 
+\family typewriter 
+ryhma
+\family default 
+-taulussa on myös tietue [3, 'Yhteystiedot', '-', '-', '-', '-', '-'].
+ Tämä on esimerkki ryhmästä, jota käytetään liitetietotyyppien jaotteluun.
+ Liitetietotyyppien rypästely muodostuu usein varsin luonnollisella tavalla
+ niiden yleistyksistä.
+ Sähköposti on yhteystieto, yhteystieto voi olla mm.
+ sähköposti.
+\layout Quote
+
+Luodaan seuraavaksi hieman monimutkaisempi rakenne, joka on suoraan jatkoa
+ edellisille esimerkeille.
+ Sitä varten tarvitaan metatietoon aikaisempien lisäksi ryhmä 'Organisaatiot'
+ (
+\family typewriter 
+ryhma
+\family default 
+-taulun tietue [2, 'Organisaatiot', 'Nimi', '-aakkostusnimi'
+\begin_float footnote 
+\layout Standard
+
+Tavuviiva kentän nimen ensimmäisenä kirjaimena on käytäntö, jolla merkitään
+ vain järjestelmän sisäiseen käyttöön tarkoitettu data.
+ Tässä yhteydessä tavoitteena on se, että organisaation nimi voi olla 'Oy
+ Firma Ab', mutta se aakkostetaan 'firma':n kohdalle.
+\end_float 
+, 'Kuvaus', '-', '-']) ja liitetieto 'Vastuuhenkilö' (
+\family typewriter 
+liite
+\family default 
+-taulun tietue [3, 1, 'Vastuuhenkilö']).
+ Luodaan tietokantaan eräs jyväskyläläinen roolipeliseura lisäämällä 
+\family typewriter 
+kohde
+\family default 
+-tauluun tietue [43, 2, 'Maahinkainen ry', 'maahinkainen', 'Jyväskylän rooli-,
+ strategia ja näytelmäroolipeliseura', 2001-09-11].
+ Nyt pystytään ilmaisemaan jo varsin mutkikas suhde lisäämällä 
+\family typewriter 
+kohde_liite
+\family default 
+-tauluun [85, 43, 3, 'Rahastonhoitaja', 2001-09-11], 
+\family typewriter 
+viittaus
+\family default 
+-tauluun [85, 42] (Maahinkaisella on vastuuhenkilö, jota karakterisoivat
+ tekstitieto 'Rahastonhoitaja' ja viittaus kohteeseen Tero Tilus) ja 
+\family typewriter 
+jakso
+\family default 
+-tauluun [85, 2001-09-01, 2002-09-01, 'in'].
+ Tulkinta aukikirjoitettuna on se, että Maahinkaisen rahastonhoitajana 1.9.2001-1.9.
+2002 toimii Tero Tilus.
+\layout Subsubsection
+
+Taulumäärittelyt
+\begin_inset LatexCommand \label{sec: taulumäärittelyt}
+
+\end_inset 
+
+
+\layout Standard
+
+Käytetyt tietotyypit ja taulujen tarkempi rakenne selviävät taulumäärittelyistä.
+\layout LyX-Code
+
+CREATE TABLE kohde (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohdeid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ ryhmaid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ nimi CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ nimi2 CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ data LONGBLOB,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ leima TIMESTAMP(14), # Viimeisimmän muutoksen ajankohta
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (kohdeid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (ryhmaid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (nimi2(10), nimi(10)),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (leima)
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE liite (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ liiteid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ ryhmaid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ nimi CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (liiteid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (ryhmaid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (nimi(10))
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE kohde_liite (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_liiteid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohdeid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ liiteid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ data LONGBLOB,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ leima TIMESTAMP(14), # Viimeisimmän muutoksen ajankohta
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (kohde_liiteid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (kohdeid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (liiteid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (leima)
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE viittaus (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_liiteid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohdeid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (kohde_liiteid, kohdeid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (kohdeid)
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE ryhma (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ ryhmaid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ nimi CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_nimi CHAR(255) NOT NULL, 
+\protected_separator 
+# kohde.nimi
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_nimi2 CHAR(255) NOT NULL, # kohde.nimi2
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_data CHAR(255) NOT NULL, 
+\protected_separator 
+# kohde.data
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ liite_nimi CHAR(255) NOT NULL, 
+\protected_separator 
+# liite.nimi (ei käytössä)
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_liite_data CHAR(255) NOT NULL, # kohde_liite.data (ei käytössä)
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (ryhmaid)
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE jakso (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ jaksoid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_liiteid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ alku DATETIME NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ loppu DATETIME NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ type SET('in','ex') NOT NULL DEFAULT 'in',
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (jaksoid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (kohde_liiteid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (alku, loppu)
+\layout LyX-Code
+
+);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+CREATE TABLE tiedosto (
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ tiedostoid INTEGER NOT NULL AUTO_INCREMENT,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ kohde_liiteid INTEGER NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ data LONGBLOB,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ nimi CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ mime CHAR(255) NOT NULL,
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ PRIMARY KEY (tiedostoid),
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ INDEX (nimi)
+\layout LyX-Code
+
+);
+\layout Subsubsection
+
+Käyttäjäoikeudet
+\begin_inset LatexCommand \label{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+
+\layout Standard
+
+Metatiedon ja varsinaisen tiedon lisäksi myös Mapin käyttäjäoikeustiedot
+\begin_inset LatexCommand \index{käyttäjäoikeustiedot}
+
+\end_inset 
+
+ on tallennettu Mappi-tietokantaan.
+ Käyttäjäoikeustiedot on esitetty samaa rakennetta käyttäen kuin muukin
+ tieto.
+ Peruskäyttöliittymästä erilliset komponentit eivät siten ole tarpeen käyttäjäoi
+keustietojen käsittelyyn, vaan niitä muokataan samoin kuin mitä tahansa
+ tietokannassa olevaa tietoa.
+ Käyttäjäoikeuksia ja niiden valvontaa ei siis ole toteutettu tietokantatasolla,
+ koska se sitoisi Mapin huomattavasti voimakkaammin käytettyyn tietokantakoneese
+en.
+ Käyttäjäoikeuksien valvonta on rakennettu sisään Mapin web-käyttöliittymään.
+\layout Standard
+
+Käyttäjäoikeusmääritykset muodostuvat oikeusprofiileista
+\begin_inset LatexCommand \index{oikeusprofiili}
+
+\end_inset 
+
+ ja kirjautumistunnuksista
+\begin_inset LatexCommand \index{kirjautumistunnus}
+
+\end_inset 
+
+.
+ Molemmissa metatauluissa on näitä varten varattu indeksinumero 0
+\begin_float footnote 
+\layout Standard
+
+Tämä ratkaisu on MySQL-tietokannan kanssa osoittautunut hiukan ongelmalliseksi.
+ 'Autoincrement' -tyyppiseen kenttään ei nimittäin voi suoraan asettaa arvoa
+ 0.
+ Tästä syystä perusdataa luotaessa pitää näiden kahden tietueen lisäyksen
+ jälkeen korjata erillisellä 'update' -lauseella indeksikentän arvoksi 0.
+\end_float 
+.
+ Ryhmään 0 kuuluvat kohteet ovat oikeusprofiileja ja liitetietotyyppiä 0
+ olevat liitetiedot kirjautumistunnuksia.
+ 
+\layout Standard
+
+Oikeusprofiilin
+\begin_inset LatexCommand \index{oikeusprofiili}
+
+\end_inset 
+
+ 
+\family typewriter 
+data
+\family default 
+-kentän sisällössä merkitseviä ovat 
+\family typewriter 
+read
+\family default 
+ ja 
+\family typewriter 
+write
+\family default 
+ -tagien sisällöt.
+ Ne määräävät, mihin ryhmiin kyseisellä oikeusprofiililla on luku tai kirjoituso
+ikeudet sillä poikkeuksella, että kirjoitusoikeudet merkitsevät automaattisesti
+ myös lukuoikeuksia.
+ Tagin sisältö on joko pilkkueroteltu lista ryhmien indeksejä tai 
+\family typewriter 
+*
+\family default 
+ merkitsemässä kaikkia
+\begin_float footnote 
+\layout Standard
+
+Sisältäen automaattisesti myös vielä määrittelemättömät ryhmät!
+\end_float 
+ ryhmiä.
+ Mikäli lisäksi löytyy 
+\family typewriter 
+ryhma
+\family default 
+-tagin sisällä oleva sana 
+\family typewriter 
+write
+\family default 
+, on profiililla oikeus muokata metatietoa.
+ Uuden kohteen lisäämiseen ja kohteen perustietojen (
+\family typewriter 
+kohde
+\family default 
+-taulun kolme tietokenttää) muokkaamiseen riittää kirjoitusoikeus ryhmään,
+ johon kohde kuuluu.
+ Liitetietojen muokkaamiseen tarvitaan kirjoitusoikeus ryhmään, johon kohde,
+ jonka liitetiedosta on kyse, kuuluu ja ryhmään, johon liitetietotyyppi,
+ jota kyseinen liitetieto edustaa, kuuluu.
+\layout Standard
+
+Kirjautumistunnuksen
+\begin_inset LatexCommand \index{kirjautumistunnus}
+
+\end_inset 
+
+ 
+\family typewriter 
+data
+\family default 
+-kentän sisällössä merkitseviä ovat 
+\family typewriter 
+uname
+\family default 
+ ja 
+\family typewriter 
+pw
+\family default 
+ -
+\latex latex 
+
+\backslash 
+nobr{}
+\latex default 
+tagien sisällöt.
+ Ne määräävät käyttäjätunnuksen (
+\family typewriter 
+uname
+\family default 
+) ja salasanan MD5-summan (
+\family typewriter 
+pw
+\family default 
+).
+ 
+\family typewriter 
+ntdomain
+\family default 
+ -tagi ei toistaiseksi ole käytössä.
+ Se on varattu Windows NT -
+\latex latex 
+
+\backslash 
+nobr{}
+\latex default 
+toimialueesta autentikointiin.
+\layout Standard
+
+Kirjautumistunnukset ja oikeusprofiili kytkeytyvät toisiinsa viittauksen
+ avulla.
+ Jokaisella kirjautumistunnuksella tulee olla täsmälleen yksi (jatkossa
+ mahdollisesti useampia) viittaus oikeusprofiiliin.
+ Järjestelmään kirjautumisen
+\begin_inset LatexCommand \index{kirjautuminen}
+
+\end_inset 
+
+ yhteydessä kirjautuja tunnistetaan siksi kohteeksi, jolta löytyy annettua
+ käyttäjätunnus-salasana -paria vastaava kirjautumistunnus (liitetieto).
+ Kirjautuneen kohteen oikeudet määräytyvät kirjautumistunnuksen (liitetieto)
+ viittauksen mukaan.
+ Kohde saa viitatun profiilin mukaiset oikeudet.
+\layout Quote
+
+Jatketaan aikaisempaa esimerkkiä antamalla Tero Tilukselle tunnukset kirjautua
+ järjestelmään pääkäyttän oikeuksilla.
+ Tätä varten tarvitaan kohde_liite-tauluun tietue [86, 42, 0, '<uname>terotil</u
+name> <pw>912ec8 03b2ce49e4a541068d495ab570
+\begin_float footnote 
+\layout Standard
+
+Merkkijonon 'asdf' MD5-summa.
+\end_float 
+</pw>', 2001-09-11], josta viittaus 'Pääkäyttäjä' -oikeusryhmään, eli viittaus-t
+auluun tietue [86, 0].
+\layout Standard
+
+Yhdellä kohteella voi olla useita kirjautumistunnuksia
+\begin_inset LatexCommand \index{kirjautumistunnus}
+
+\end_inset 
+
+, mutta sama käyt\SpecialChar \-
+tä\SpecialChar \-
+jä\SpecialChar \-
+ni\SpecialChar \-
+mi ei kuitenkaan saa esiintyä monessa kirjautumistunnukse
+ssa.
+ Mikäli näin kuitenkin on, kirjautumistunnuksista huomioidaan vain ensiksi
+ tietokantaan syötetty.
+ Toistaiseksi kirjautumistunnuksesta voi olla viittaus vain yhteen oikeusprofiil
+ii
+\begin_inset LatexCommand \index{oikeusprofiili}
+
+\end_inset 
+
+n, mutta jatkossa on tarkoitus toteuttaa kumuloituvat oikeudet, jolloin
+ viittauksia voisi olla useita.
+ Kirjautuva kohde voi olla periaatteessa mikä hyvänsä, tavallisimmin toki
+ henkilö, mutta esim.
+ pääkäyttäjänä kirjautuessa kirjautuva kohde on oikeusprofiili itse.
+ Tällä minimoidaan välttämättömän datan määrä.
+\layout Subsubsection
+
+Minimidata
+\begin_inset LatexCommand \label{sec: minimidata}
+
+\end_inset 
+
+
+\begin_inset LatexCommand \index{minimitietokanta}
+
+\end_inset 
+
+
+\layout Standard
+
+Seuraavalla MySQL-skriptillä syötetään tietokantaan mapin web-käyttöliittymän
+ toiminnan edellyttämä minimi-informaatio.
+ Rivin lopussa oleva 
+\begin_inset Quotes eld
+\end_inset 
+
+
+\family typewriter 
+
+\backslash 
+
+\family default 
+
+\begin_inset Quotes erd
+\end_inset 
+
+ -
+\latex latex 
+
+\backslash 
+nobr{}
+\latex default 
+merkki (backslash) tarkoittaa sitä, että todellisuudessa rivi jatkuu suoraan
+ seuraavan näkyvän rivin ensimmäisellä ei-tyhjällä merkillä.
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# MAPPI -tietokannan pohja
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# Oletusryhmät
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+INSERT INTO ryhma VALUES 
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ (-1,'Oikeudet','Oikeusryhmä','Info','Määrittelyt',
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 'nimi','data');
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# Id:n korjaus, autoincrement -kenttää ei saa asetettua 
+\layout LyX-Code
+
+# nollaksi
+\layout LyX-Code
+
+UPDATE ryhma SET ryhmaid = 0 WHERE ryhmaid = -1;
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# Oletusliitteet
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+INSERT INTO liite VALUES 
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ (-1,0,'Login');
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# Id:n korjaus, autoincrement -kenttää ei saa asetettua 
+\layout LyX-Code
+
+# nollaksi
+\layout LyX-Code
+
+UPDATE liite SET liiteid = 0 WHERE liiteid = -1;
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# Oikeusasetukset pääkäyttäjäryhmälle
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+INSERT INTO kohde VALUES 
+\layout LyX-Code
+
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ (-1,0,'Pääkäyttäjä','', 
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 'Oikeudet ryhmiin (luku/kirjoitus) : 
+\backslash 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+<code>
+\backslash 
+'<read>*</read> / <write>*</write>
+\backslash 
+'</code> 
+\backslash 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+Oikeudet ryhmätauluun : 
+\backslash 
+ 
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+<code>
+\backslash 
+'<ryhma>write</ryhma>
+\backslash 
+'</code>', 
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ NULL);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# Id:n korjaus, autoincrement -kenttää ei saa asetettua nollaksi
+\layout LyX-Code
+
+UPDATE kohde SET kohdeid = 0 WHERE kohdeid = -1;
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# Kirjautuminen jumalana, eli pääkäyttäjäryhmänä 
+\layout LyX-Code
+
+# pääkäyttäjän oikeuksilla, jolloin uid on maaginen 0
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+# md5('')
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = d41d8cd98f00b204e9800998ecf8427e
+\layout LyX-Code
+
+# md5('root') = 63a9f0ea7bb98050796b649e85481845
+\layout LyX-Code
+
+# md5('asdf') = 912ec803b2ce49e4a541068d495ab570
+\layout LyX-Code
+
+# -------------------------------------------------------
+\layout LyX-Code
+
+INSERT INTO kohde_liite VALUES 
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+(1,0,0,
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 'Käyttäjätunnus : <code>
+\backslash 
+'<uname>root</uname>
+\backslash 
+'</code> 
+\backslash 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+Salasana (MD5-summa) : 
+\backslash 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+<code>
+\backslash 
+'<pw>63a9f0ea7bb98050796b649e85481845</pw>
+\backslash 
+'</code> 
+\backslash 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+NT-domain : <code>
+\backslash 
+'<ntdomain></ntdomain>
+\backslash 
+'</code>', 
+\layout LyX-Code
+
+
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ 
+\protected_separator 
+ NULL);
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+# Viittaus kirjautumisesta pääkäyttäjän oikeusryhmään
+\layout LyX-Code
+
+INSERT INTO viittaus VALUES (1,0);
+\layout Standard
+
+Toimiakseen web-käyttöliittymä tarvitsee siis tietokannalta ainakin yhden
+ tunnuksen, jolla kirjautua sisään.
+ Se taas edellyttää tietokannan metatiedolta vähintään yhtä ryhmää (oikeusprofii
+lit) ja yhtä liitetietotyyppiä (kirjautumistunnukset) sekä tietosisällöltä
+ kahta kohdetta (oikeusprofiili ja kirjautuva kohde), yhtä liitetietoa (kirjautu
+mistunnus) ja yhtä viittausta (kirjautumistunnuksesta oikeusprofiiliin).
+ Koska oikeusprofiili voi samalla toimia myös kirjautuvana kohteena, päästään
+ näin ilman poikkeustapauksia liikkeelle varsin minimalistisella tietokannalla.
+\layout Subsection
+
+Web-käyttöliittymä
+\layout Standard
+
+Vasta web-käyttöliittymä tekee Mapista käyttökelpoisen ajatellen todellisia
+ sovelluskohteita.
+ Tässä luvussa käydään läpi Mapin web-käyttöliittymän rakenne ja toiminta.
+ Tämän luvun rinnalla suositellaan kursorisesti luettavaksi myös ohjelman
+ lähdekoodia kulloinkin mainituilta osin.
+\layout Subsubsection
+
+Toteutus ja toiminnot
+\layout Standard
+
+Toteutukseltaan käyttöliittymä on kasa ns.
+ yhden asian PHP-skriptejä.
+ Kaikille toiminnoille (ja siten myös kaikille skripteille) yhteinen järjestelmä
+n alustaminen
+\begin_inset LatexCommand \index{alustus, käyttöliittymä}
+
+\end_inset 
+
+ on koottu 
+\family typewriter 
+mappi_headers.php
+\family default 
+ -tiedostoon, jonka skriptit ensitöikseen lataavat.
+ Tämä yhteinen alustusskripti lataa mappi-järjestelmän funktiokirjastot
+ (
+\family typewriter 
+general.php, mappi_lib.php
+\family default 
+) ja asetukset
+\begin_inset LatexCommand \index{asetustiedosto}
+
+\end_inset 
+
+ (
+\family typewriter 
+mappi_rc.php
+\family default 
+)
+\begin_inset LatexCommand \label{RC-tiedosto}
+
+\end_inset 
+
+, palauttaa käyttäjäkohtaisen istunnon ja sinne tallennetun datan, tarkistaa,
+ että käyttäjä on kirjautunut sekä avaa tietokantayhteyden.
+\layout Paragraph
+
+Skriptien toiminta
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec: Edelleenohjaus}
+
+\end_inset 
+
+Kaikki skriptit eivät välttämättä tulosta web-sivua.
+ Suurin osa skripteistä toimii tavanomaisten CGI-skriptien tapaan tulostaen
+ web-sivun mahdollisten parametrien ohjaamana.
+ Tietokannan tietueiden lisäys- ja poistoskriptit (
+\family typewriter 
+*_insert.php
+\family default 
+ ja 
+\family typewriter 
+*_delete.php
+\family default 
+) kuitenkin toimivat tästä poiketen.
+ Toimenpiteensä suoritettuaan nämä skriptit eivät lähetä http-pyynnön vastauksen
+a dokumenttia vaan ainoastaan ilmoituksen pyynnön onnistuneesta prosessoinnista
+ ja 
+\family typewriter 
+Location:
+\family default 
+ -http-otsikon ilmoittaen, että varsinainen dokumentti on noudettavissa
+ otsikon mukaisesta osoitteesta
+\begin_float footnote 
+\layout Standard
+
+Toimenpidettä varten löytyy 
+\family typewriter 
+mappi_lib.php
+\family default 
+ -kirjastosta funktio 
+\family typewriter 
+forward
+\family default 
+.
+\end_float 
+.
+ Tietueen lisäys ohjautuu lisätyn tietueen muokkauskenttään ja poisto luettelonä
+kymään, jota kautta poistettu tietue oli tarkasteltavissa.
+ Tällä tavoin vältytään kaksilta syöttölomakkeilta
+\begin_float footnote 
+\layout Standard
+
+Erillinen lomake muokkausta varten ja toinen taas tiedon syöttävälle sivulle.
+\end_float 
+ ja saadaan myös järjestelmästä ryhmäkohtaisesti räätälöityjen lisäysmodulien
+ avulla laajennettava (ks.
+ luku 
+\begin_inset LatexCommand \ref{Laajennus}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{Laajennus}
+
+\end_inset 
+
+).
+\layout Standard
+
+Jokainen skripti tulostaa itse näkymän.
+\begin_inset LatexCommand \index{näkymä}
+
+\end_inset 
+
+ Muu osa käyttöliittymää kootaan tarpeen mukaan
+\begin_float footnote 
+\layout Standard
+
+Edelleenohjaavat sivut eivät luonnollisestikaan tulosta mitään.
+\end_float 
+ 
+\family typewriter 
+mappi_html_*.php
+\family default 
+ -tiedostoista.
+ Järjestelmän yleisen ulkoasun (otsikkorivi, valikkopalkki ja tilarivi)
+ räätälöinti tapahtuu tällä hetkellä näitä tiedostoja muokkaamalla.
+ Näkymien muokkaus onnistuu ainoastaan näkymien tulostuksesta vastaavia
+ skriptejä muokkaamalla.
+\layout Paragraph
+
+Käyttöliittymän toiminnot
+\layout Standard
+
+Näkymien välillä liikutaan pääsääntöisesti web-perinteen mukaisesti tavanomaisia
+ linkkejä klikkailemalla.
+ Painikepalkin painikkeet ovat myös linkkejä, vaikka tuntuma tarkoituksella
+ on painikemainen.
+ Lomakkeissa luonnollisesti käytetään painikkeita.
+ Kohteiden ja liitetietojen nimet ovat jokaisessa näkymässä linkkejä, jotka
+ johtavat kyseisen kohteen tai liitetiedon näyttävään näkymään.
+ Jonkin muokkaustoiminnon suoraan aiheuttavat linkit on kirjoitettu [hakasulkeis
+iin] ja teksti ilmoittaa toiminnon.
+\layout Standard
+
+Tietueita lisäävä lomake (joissain tapauksissa pelkkä painike) sijaitsee
+ aina näkymän vasemmassa ylänurkassa ja poistopainike vastaavasti oikeassa
+ ylänurkassa.
+ Tehdyt muutokset tallentava painike on aina muutoslomakkeen oikealla puolella
+ tai alapuolella.
+ Kannattaa huomata, ettei tämä välttämättä tarkoita näkymän oikeata laitaa
+ tai alalaitaa.
+ Näkymissä voi nimittäin olla useitakin lomakkeita.
+\layout Paragraph
+
+Loki
+\begin_inset LatexCommand \index{lokitiedosto}
+
+\end_inset 
+
+
+\layout Standard
+
+Mappi kirjoittaa toiminnastaan lokia asetuksissa (ks.
+ luku  
+\begin_inset LatexCommand \ref{RC-tiedosto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{RC-tiedosto}
+
+\end_inset 
+
+) määrättyyn tiedostoon (oletuksena 
+\family typewriter 
+/var/log/mappi.log
+\family default 
+).
+ Lokiin kirjautuu minimimäärä tietoa, josta voidaan jälkikäteen selvittää,
+ kuka mitäkin on tehnyt.
+ Kirjautuvia asioita ovat käyttäjien sisään- ja uloskirjautumiset Mappi-jär\SpecialChar \-
+jes\SpecialChar \-
+te
+l\SpecialChar \-
+mään ja tieto tietokannan sisältöä muuttavista SQL-kyselyistä (ajankohta
+ ja käyttäjänimi).
+ Aikatiedon perusteella itse kyselyt -- mikäli tarkempaa tietoa tapahtuneesta
+ tarvitaan -- löytää tietokantapalvelimen lokitiedostosta.
+\layout Subsubsection
+
+Laajennusmahdollisuudet
+\begin_inset LatexCommand \label{Laajennus}
+
+\end_inset 
+
+
+\layout Standard
+
+Peruskäyttöliittymää voidaan sitä itseään mitenkään muokkaamatta laajentaa
+ ryhmäkohtaisilla kohteen lisäysskripteillä, liitetietotyyppikohtaisilla
+ liitetiedon lisäysskripteillä ja lisänäkymillä (raportit) tai muilla työkaluill
+a.
+\layout Standard
+
+Esimerkiksi raportit -sivun lähdekoodi näyttää seuraavalta
+\layout LyX-Code
+
+<?php
+\layout LyX-Code
+
+
+\protected_separator 
+ $pagename = 'Raportit';
+\layout LyX-Code
+
+
+\protected_separator 
+ require_once('mappi_headers.php');
+\layout LyX-Code
+
+
+\protected_separator 
+ require_once('mappi_html-head.php');
+\layout LyX-Code
+
+
+\protected_separator 
+ require_once('mappi_html-body-begin.php');
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ // Linkitetään otsikkotietojen perusteella kaikki 
+\layout LyX-Code
+
+
+\protected_separator 
+ //
+\protected_separator 
+raportti_*.php -tiedostot.
+\layout LyX-Code
+
+
+\protected_separator 
+ echo link_scripts('^raportti_.*
+\backslash 
+.php$');
+\layout LyX-Code
+
+
+\protected_separator 
+
+\layout LyX-Code
+
+
+\protected_separator 
+ require_once('mappi_html-body-end.php');
+\layout LyX-Code
+
+?>
+\layout Standard
+
+Sivun nimeksi asetetaan 
+\begin_inset Quotes eld
+\end_inset 
+
+Raportit
+\begin_inset Quotes erd
+\end_inset 
+
+, joka tuottaa otsikkoriville tekstin 
+\begin_inset Quotes eld
+\end_inset 
+
+Järjestelmän nimi > Raportit
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Seuraavat kolme riviä alustavat järjestelmän ja tulostavat sivun alkupuoliskon.
+ Funktion 
+\family typewriter 
+link_scripts
+\family default 
+ kutsu palauttaa linkit tiedostoihin, joiden nimi täsmää parametrina vietyyn
+ säännölliseen lausekkeeseen.
+ Linkkitekstit ja linkkien ryhmittely otsikoiden alle määräytyvät tiedostojen
+ ensimmäisten rivien mukaan.
+ Esimerkiksi gospelkuoro Tuluksen intranet-käytössä olevan Mappi-järjestelmän
+ tiedoston 
+\family typewriter 
+raportti_lasnaolo.php
+\family default 
+ ensimmäinen rivi on
+\layout LyX-Code
+
+<?php //;Yhteenvedot;Läsnäololista
+\layout Standard
+
+Se tulkitaan siten, että linkki kyseiseen tiedostoon tulee 
+\begin_inset Quotes eld
+\end_inset 
+
+Yhteenvedot
+\begin_inset Quotes erd
+\end_inset 
+
+ -otsikon alle
+\begin_float footnote 
+\layout Standard
+
+Saman otsikon alle voi tulla useita linkkejä.
+ 
+\end_float 
+ ja linkkiteksti on 
+\begin_inset Quotes eld
+\end_inset 
+
+Läsnäololista
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Tarkempi toiminta selvitää tutkimalla funktiokirjastosta löytyvän 
+\family typewriter 
+link_scripts
+\family default 
+ -funktion toimintaa.
+\layout Standard
+
+Raportit -sivun ja pitkälti samalla periaatteella toimivan asetukset -sivun
+ toiminnasta kerrotaan lisää kohdassa 
+\begin_inset LatexCommand \ref{sec: Raportit ja asetukset}
+
+\end_inset 
+
+ sivulla 
+\begin_inset LatexCommand \pageref{sec: Raportit ja asetukset}
+
+\end_inset 
+
+.
+ Raportit -sivusta on samassa yhteydessä myös kuva.
+\layout Subsubsection
+
+Näytön osat
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 83
+file pics/webmappi_kirj.eps
+subcaption Näytön osat
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Näytön osat
+\begin_inset LatexCommand \label{fig: näytön osat}
+
+\end_inset 
+
+
+\end_float 
+Käyttöliittymän näyttö (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: näytön osat}
+
+\end_inset 
+
+) jakautuu neljään alueeseen, joista jatkossa käytetään nimityksiä otsikkorivi
+\begin_inset LatexCommand \index{otsikkorivi}
+
+\end_inset 
+
+, painikepalkki
+\begin_inset LatexCommand \index{painikepalkki}
+
+\end_inset 
+
+, tilarivi
+\begin_inset LatexCommand \index{tilarivi}
+
+\end_inset 
+
+ ja näkymä
+\begin_inset LatexCommand \index{näkymä}
+
+\end_inset 
+
+.
+\layout Standard
+
+Otsikkorivi on varattu kursoria varten.
+ Kursorina toimii teksti, joka kertoo näkymän
+\begin_inset LatexCommand \index{näkymä}
+
+\end_inset 
+
+ sisällön sijainnin järjestelmän hierarkiassa.
+ Hierarkiatasojen erottimena on 
+\begin_inset Quotes eld
+\end_inset 
+
+>
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Tekstipätkän ensimmäisenä osana näytetään järjestelmälle mappi_rc.php -tiedostos
+sa olevissa asetuksissa määrätty nimi (ks.
+ luku  
+\begin_inset LatexCommand \ref{järjestelmän nimi}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{järjestelmän nimi}
+
+\end_inset 
+
+).
+ Toinen osa on tavallisimmin jokin painikepalkin painikkeiden teksteistä
+ riippuen siitä missä osassa järjestelmää kulloinkin ollaan.
+\layout Quote
+
+Jos Tero Tilus on muokkaamassa omaa sähköpostiosoitettaan gospelkuoro Tuluksen
+ intranet tietokannassa (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Organisaation sis. tied. (Tulus)}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Organisaation sis. tied. (Tulus)}
+
+\end_inset 
+
+), on otsikkopalkin kursoriteksti 
+\begin_inset Quotes eld
+\end_inset 
+
+Tulus > Tietokanta > Tero Tilus > Sähköpostiosoite
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Painikepalkissa on näkyvillä käyttöliittymän toimintokokonaisuudet.
+\layout Description
+
+Tietokanta Tietosisällön selaus ja muokkaus.
+ Metatietoa ei muokata tätä kautta, vaan se kuuluu Mapin käyttöliittymän
+ näkökulmasta tietokanta-ase\SpecialChar \-
+tuk\SpecialChar \-
+siin, vaikka tietokannan sisältöä onkin.
+\layout Description
+
+Raportit Peruskäyttöliittymään kuulumattomat toiminnot, laajennukset ja
+ lisänäkymät.
+ Nimi saattaa hieman harhauttaa, koska lokerosta löytyy muutakin, kuin raporttej
+a.
+ Mahdollisesti osuvampi nimi olisi 
+\begin_inset Quotes eld
+\end_inset 
+
+Työkalut
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Description
+
+Asetukset Käyttäjäkohtaiset asetukset ja tietokanta-asetukset.
+ Metatietoa selataan ja muokataan tätä kautta.
+\layout Description
+
+Ohjeet Käyttöohjeet.
+\layout Standard
+
+Edellisten lisäksi painikepalkissa on vielä painikkeet 
+\begin_inset Quotes eld
+\end_inset 
+
+Takaisin
+\begin_inset Quotes erd
+\end_inset 
+
+ ja 
+\begin_inset Quotes eld
+\end_inset 
+
+Lopeta
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Takaisin
+\begin_inset Quotes erd
+\end_inset 
+
+ toimii olennaisesti samaan tapaan kuin selaimen vastaava, mutta osaa jättää
+ väliin edelleenohjausta (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Edelleenohjaus}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Edelleenohjaus}
+
+\end_inset 
+
+) käyttävät sivut ja muutosten hyväksymisen tapauksessa muokkaussivut.
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Lopeta
+\begin_inset Quotes erd
+\end_inset 
+
+ hakee lopetussivun (
+\family typewriter 
+logout.php
+\family default 
+), joka lopettaa kirjautumisen yhteydessä aloitetun istunnon ja poistaa
+ istuntokohtaisen datan sekä selaimesta että palvelimelta.
+\layout Subsubsection
+
+Kirjautuminen ja istunto
+\begin_inset LatexCommand \label{sec: Kirjautuminen ja istunto}
+
+\end_inset 
+
+
+\layout Standard
+
+WWW-Palvelimen kannalta saapuvilla sivupyynnöillä ei ole mitään kytköstä
+ toisiinsa.
+ Tästä syystä web-sovelluksissa on yleensä tarpeen saada asiakaskohtaisesti
+ tietoa tallennettua yhden istunnon ajaksi.
+ Hyvä esimerkki tästä on tarve kirjautumisen yhteydessä varmennettujen käyttäjäo
+ikeuksien tallentamiseen siten, että ne ovat yksiselitteisesti liitettävissä
+ sivupyyntöihin, jotka tulevat siltä nimenomaiselta asiakassovellukselta,
+ jolta myös oikeuttava tunnistus saatiin.
+\layout Standard
+
+Istunnonhallintaan Mappi käyttää PHP:n valmiita istunnonhallintaominaisuuksia.
+ Sen ominaisuudet ovat Mapin tarpeisiin täysin riittävät.
+ Tietoturva
+\begin_inset LatexCommand \index{tietoturva}
+
+\end_inset 
+
+ avointa yhteyttä käytettäessä on kuitenkin varsin vaatimaton ja istunto
+ tai käyttäjätunnukset on helppo kaapata.
+ Mapin käyttö salatun yhteyden yli kuitenkin tarjoaa riittävän turvan.
+ Salatun yhteyden käyttäminen nykyisellä Mapin toteutuksella edellyttää
+ ainoastaan SSL-tuen sisältävää Apache-versiota.
+\layout Standard
+
+Mapin web-käyttöliittymän jokainen sivu (lukuunottamatta kirjautumis- ja
+ lopetussivuja) suorittaa järjestelmän alustamisen
+\begin_inset LatexCommand \index{alustus, käyttöliittymä}
+
+\end_inset 
+
+, jonka yhteydessä palautetaan (tai alustetaan uusi) istunto ja tarkistetaan,
+ että käyttäjä on kirjautunut.
+ Ellei istuntokohtaisista muuttujista löydetä käyttäjä- ja käyttäjäoikeustietoja
+, ohjataan tunnistamaton tulija järjestelmän pääsivulle (
+\family typewriter 
+index.php
+\family default 
+), joka kirjautumattomalle käyttäjälle tulostaa kirjautumislomakkeen.
+\layout Standard
+
+Kirjautumislomake hakee kirjautumissivun (
+\family typewriter 
+login.php
+\family default 
+), joka tarkistaa täsmäävätkö annetut käyttäjätunnus ja salasana johonkin
+ kirjautumistunnukseen
+\begin_inset LatexCommand \index{kirjautumistunnus}
+
+\end_inset 
+
+ (ks.
+ luku 
+\begin_inset LatexCommand \ref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+).
+ Mikäli ei, ohjataan käyttäjä takaisin pääsivulle, jossa odottaa kirjautumisloma
+ke ja edelleenohjauksen yhteydessä parametrina matkaan laitettu viesti 
+\begin_inset Quotes eld
+\end_inset 
+
+Virheellinen käyt\SpecialChar \-
+tä\SpecialChar \-
+jä\SpecialChar \-
+ni\SpecialChar \-
+mi tai salasana!
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Mikäli käyttäjätunnus-salasana -yhdistelmä taas täsmää, tallentaa kirjautumissi
+vu vastaavat käyttäjä- ja käyttäjäoikeustiedot istuntokohtaisiin muuttujiin
+ ja ohjaa käyttäjän takaisin pääsivulle, joka kirjautuneelle käyttäjälle
+ näyttää inforuudun.
+\layout Standard
+
+Tällä hetkellä käytössä on seuraavat istuntokohtaiset muuttujat
+\layout Description
+
+
+\family typewriter 
+mappi_back_script
+\family default 
+ Lista Mappia käytettäessä tehtyjen sivupyyntöjen osoitteista ilman parametreja.
+ Käytetään pinon tapaan 
+\begin_inset Quotes eld
+\end_inset 
+
+Takaisin
+\begin_inset Quotes erd
+\end_inset 
+
+ -painikkeen toiminnallisuuden toteuttamisessa.
+\layout Description
+
+
+\family typewriter 
+mappi_back_arg
+\family default 
+ Lista Mappia käytettäessä tehtyjen sivupyyntöjen parametrilistoista.
+ Jokainen parametrilista on parametrin nimillä indeksoitu taulukko parametrien
+ arvoista.
+ Parametrien tallentaminen tietorakenteena URL-merkkijonon sijaan mahdollistaa
+ niiden myöhemmän manipuloinnin.
+\layout Description
+
+
+\family typewriter 
+uid
+\family default 
+ Kirjautuneen kohteen 
+\family typewriter 
+kohdeid
+\family default 
+.
+\layout Description
+
+
+\family typewriter 
+uname
+\family default 
+ Käyt\SpecialChar \-
+tä\SpecialChar \-
+jä\SpecialChar \-
+ni\SpecialChar \-
+mi, jolla kirjauduttiin.
+\layout Description
+
+
+\family typewriter 
+read
+\family default 
+ Lista ryhmistä, joihin kuuluvat tiedot käyttäjällä on oikeus nähdä.
+\layout Description
+
+
+\family typewriter 
+write
+\family default 
+ Lista ryhmistä, joihin kuuluvia tietoja käyttäjällä on oikeus muokata.
+ Tämä lista on aina 
+\family typewriter 
+write
+\family default 
+-listan osajoukko.
+\layout Description
+
+
+\family typewriter 
+ryhma_rights
+\family default 
+ Käyttäjän oikeudet 
+\family typewriter 
+ryhma
+\family default 
+-tauluun.
+ Joko 
+\family typewriter 
+read
+\family default 
+ tai 
+\family typewriter 
+write
+\family default 
+.
+\layout Description
+
+
+\family typewriter 
+realname
+\family default 
+ Kirjautuneen kohteen nimi.
+\layout Subsubsection
+
+Tietokannan selausnäkymä
+\begin_inset LatexCommand \label{sec: Tietokannan selausnäkymä}
+
+\end_inset 
+
+
+\layout Standard
+
+Tietokannan selausnäkymään (skriptin nimi 
+\family typewriter 
+kohteet.php
+\family default 
+), jonka kautta tietokannan sisällön muokkaus tapahtuu, pääsee 
+\begin_inset Quotes eld
+\end_inset 
+
+tietokanta
+\begin_inset Quotes erd
+\end_inset 
+
+ -painikkeella (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Pääsivu}
+
+\end_inset 
+
+).
+ 
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 92
+file pics/paasivu_tietokantanappi_b.eps
+subcaption Pääsivu
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Pääsivu
+\begin_inset LatexCommand \label{fig: Pääsivu}
+
+\end_inset 
+
+
+\end_float 
+Selausnäkymässä (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Selausnäkymä}
+
+\end_inset 
+
+)
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 96
+file pics/tietokanta_selaus.eps
+subcaption Selausnäkymä
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Selausnäkymä
+\begin_inset LatexCommand \label{fig: Selausnäkymä}
+
+\end_inset 
+
+
+\end_float 
+ylimpänä on lomake uuden kohteen lisäämiseen.
+ Edellisten alla vasemmalla on lomake tietokantakohteiden hakuun ja oikealla
+ hakutulosten selausnapit.
+ Alimpana näkymässä on lista hakutuloksista.
+ Listan sarakkeiden otsikot määräytyvät listassa näytettävien kohteiden
+ ryhmän mukaan (ks.
+ luku  
+\begin_inset LatexCommand \ref{Tietokannan rakenne}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{Tietokannan rakenne}
+
+\end_inset 
+
+).
+\layout Standard
+
+Hakulomakkeen avulla rajataan listassa lueteltavat kohteet.
+ Mikäli haku tuottaa kohteita enemmän, kuin on määrätty ruudulla enimmillään
+ näytettäväksi, voi listaa selata ruudullinen kerrallaan listan yläpuolella
+ oikealla olevilla selausnapeilla.
+ Oikea nappi hakee järjestyksessä seuraavat kohteet ja vasen edelliset.
+\layout Standard
+
+Tekstikenttä rajaa näkyviin ne kohteet, joiden kahdessa ensimmäisessä sarakkeess
+a esiintyy kenttään syötetty teksti.
+ Kohde kelpuutetaan myös, jos hakuteksti esiintyy tekstissä, joka muodostuu
+ kahden ensimmäisen sarakkeen teksteistä erotettuna välilyönnillä.
+ Haku ei erottele isoja ja pieniä kirjaimia.
+ Saman tuloksen tuotaisi siis myös hakuteksti 
+\begin_inset Quotes eld
+\end_inset 
+
+RO TILU
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Kerralla listattavien kohteiden määrää voidaan rajoittaa valitsemalla tekstihaku
+kenttää seuraavasta valintalistasta haluttu maksimimäärä.
+ Määrärajausvaihtoehdot löytyvät asetustiedostosta (ks.
+ luku  
+\begin_inset LatexCommand \ref{RC-tiedosto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{RC-tiedosto}
+
+\end_inset 
+
+) ja niitä voidaan muokata sitä kautta.
+\layout Standard
+
+Hakulomakkeen valintalistoista jälkimmäisen arvo määrää se, mihin ryhmään
+ kuuluvia kohteita kohdelistassa näytetään.
+ Valintalistasta löytyvät ne ryhmät, joihin kuuluvien kohteiden tiedot kirjautun
+eella käyttäjällä on oikeus nähdä (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+).
+\layout Standard
+
+Uusi kohde lisätään tietokantaan klikkaamalla 
+\begin_inset Quotes eld
+\end_inset 
+
+Lisää uusi kohde ryhmään
+\begin_inset Quotes erd
+\end_inset 
+
+ -nappia.
+ Tätä ennen on kuitenkin valittava ryhmä, johon uusi kohde lisätään.
+ Se tehdään napin vieressä olevalla valintalistalla.
+ Kyseisestä valintalistasta löytyvät kaikki ne ryhmät, joihin kuuluvien
+ kohteiden tietoja kirjautuneella käyttäjällä on oikeus muokata (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+).
+ Lisää -napin painaminen hakee 
+\family typewriter 
+kohde_insert.php
+\family default 
+ -skriptin, joka etsii ryhmäkohtaisia lisäysskriptejä tutkimalla kaikkien
+ 
+\family typewriter 
+kohde_insert_*.php
+\family default 
+ -nimisten tiedostojen ensimmäiset rivit.
+ Jos ensimmäiseltä riviltä löytyy puolipistein eroteltu kokonaisluku, kyseisen
+ tiedoston tulkitaan olevan luvun ilmoittaman ryhmän kohteenlisäysskripti.
+ Esimerkiksi seuraava rivi
+\layout LyX-Code
+
+<?php // ;5;
+\layout Standard
+
+tiedoston 
+\family typewriter 
+kohde_insert_foo.php
+\family default 
+ ensimmäisenä rivinä tulkitaan siten, että 
+\family typewriter 
+koh de_insert_foo.php
+\family default 
+ on ryhmään 5 kuuluvien kohteiden (kohteiden, joiden ryhmaid -kentän arvo
+ on 5) lisäysskripti.
+ Jos lisäyslomakkeesta valittiin ryhmä, jolle löytyy ryhmäkohtainen lisäysskript
+i, tekee 
+\family typewriter 
+kohde_insert.php
+\family default 
+ edelleenohjauksen sinne.
+ Muussa tapauksessa lisätään kohde -tauluun uusi tietue, jonka nimi -kentän
+ arvoksi asetetaan 
+\begin_inset Quotes eld
+\end_inset 
+
+Uusi
+\begin_inset Quotes erd
+\end_inset 
+
+, ja tehdään edelleenohjaus kohdenäkymään parametrina juuri lisätyn kohteen
+ kohdeid -kentän arvo.
+\layout Subsubsection
+
+Kohdenäkymä
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 351
+file pics/kohde_tiedot.eps
+subcaption Kohdenäkymä
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Kohdenäkymä
+\begin_inset LatexCommand \label{fig: Kohdenäkymä}
+
+\end_inset 
+
+
+\end_float 
+Tietokannan selausnäkymästä (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Tietokannan selausnäkymä}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Tietokannan selausnäkymä}
+
+\end_inset 
+
+) päästään kohdenäkymään (skriptin nimi 
+\family typewriter 
+kohde.php
+\family default 
+) klikkaamalla kohteen nimeä (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Selausnäkymä}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Selausnäkymä}
+
+\end_inset 
+
+).
+ Kohdenäkymässä oltaessa kursoriteksti on 
+\begin_inset Quotes eld
+\end_inset 
+
+Järjestelmän nimi > Tietokanta > Kohteen nimi
+\begin_inset Quotes erd
+\end_inset 
+
+.
+\layout Standard
+
+Kohdenäkymä (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Kohdenäkymä}
+
+\end_inset 
+
+) tarvitsee toimiakseen yhden parametrin, näytettävän kohteen 
+\family typewriter 
+kohdeid
+\family default 
+ -kentän arvon.
+ Mikäli 
+\family typewriter 
+kohdeid
+\family default 
+ puuttuu, tekee 
+\family typewriter 
+kohde.php
+\family default 
+ edelleenohjauksen tietokannan selausnäkymään ja ilmoittaa puuttuvan parametrin
+ aiheuttamasta virheestä.
+\layout Paragraph
+
+Kohdenäkymän sisältö
+\layout Standard
+
+Kohdenäkymässä lisäys- ja poistopainikkeiden alta alkavan kolmitasoisen
+ rakenteen pääotsikot (kohdenäkymän kuvassa lihavoidulla ja kursivoidulla
+ kirjasimella ladotut) ryhmittelevät kohteen
+\begin_inset LatexCommand \index{kohde}
+
+\end_inset 
+
+ liitetiedot
+\begin_inset LatexCommand \index{liitetieto}
+
+\end_inset 
+
+ sen mukaan mihin ryhmään
+\begin_inset LatexCommand \index{ryhmä}
+
+\end_inset 
+
+ kyseiset liitetietotyypit
+\begin_inset LatexCommand \index{liitetietotyyppi}
+
+\end_inset 
+
+ kuuluvat.
+ Säännön vahvistavat poikkeukset ovat ensimmäinen 
+\begin_inset Quotes eld
+\end_inset 
+
+Perustiedot
+\begin_inset Quotes erd
+\end_inset 
+
+ ja mahdollinen viimeinen 
+\begin_inset Quotes eld
+\end_inset 
+
+Viittaukset muista kohteista
+\begin_inset Quotes erd
+\end_inset 
+
+ -otsikko, joiden merkitykset jäljempänä..
+ Otsikkona on sen ryhmän nimi, johon liitetiedot kuuluvat.
+ 
+\layout Standard
+
+Alaotsikot (kohdenäkymän kuvassa lihavoidulla kirjasimela ladotut) nimeävät
+ kohteen yksittäiset liitetiedot, eli kertovat mitä liitetyyppiä kyseinen
+ liitetieto on.
+ Otsikkona on liitetietotyypin nimi.
+ Liitetiedon varsinainen sisältö on ladottu leipäteksinä.
+ Tekstisisältö on ladottu ensimmäiseksi sellaisenaan, kuitenkin korvaten
+ rivinvaihtomerkit html:n pakotetulla rivinvaihdolla 
+\family typewriter 
+<br>
+\family default 
+.
+ Jos siis liitetiedon teksti sisältää sgml -notaatiota tai sen johdannaisia
+ tai html:n erikoismerkkejä, se saattaa rikkoa sivun rakenteen! Tekstisisällön
+ jälkeen on ladottu viittaukset, jaksot ja tiedostot omiksi pilkkuerotelluiksi
+ listoikseen.
+ 
+\layout Standard
+
+Kohdenäkymässä linkkejä ovat alaotsikot (liitetietojen nimet), viittaukset
+ ja tiedostot.
+ Alaotsikot ovat linkkejä kyseisen liitetiedon muokkausnäkymään.
+ Viittausten linkit vievät kyseisten kohteiden kohdenäkymään, joka mahdollistaa
+ helpon liikkumisen toistensa kanssa määritellyssä suhteessa olevien kohteiden
+ välillä.
+ Tiedostojen linkit palauttavat kyseiset tiedostot sellaisenaan, eli palvelin
+ vastaa linkin sisältämään pyyntöön lähettämällä vastauksen otsikkotiedoissa
+ tiedostosta tallennetut metatiedot (vrt.
+ taulumäärittelyt 
+\begin_inset LatexCommand \ref{sec: taulumäärittelyt}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: taulumäärittelyt}
+
+\end_inset 
+
+, 
+\family typewriter 
+tiedosto
+\family default 
+) ja datana tiedoston sisällön.
+\layout Standard
+
+Poikkeuksena aiemmin kerrottuun sääntöön 
+\begin_inset Quotes eld
+\end_inset 
+
+Perustiedot
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset LatexCommand \index{kohde, perustiedot}
+
+\end_inset 
+
+ -pääotsikon alla olevat tiedot eivät ole liitetietoja, vaan ne ovat annetussa
+ järjestyksessä peräisin 
+\family typewriter 
+kohde
+\family default 
+ -taulun 
+\family typewriter 
+ryhma
+\family default 
+, 
+\family typewriter 
+nimi
+\family default 
+, 
+\family typewriter 
+nimi2
+\family default 
+ ja 
+\family typewriter 
+data
+\family default 
+ -kentistä ja kolmesta viimeisestä kentästä käytetyt nimet määräytyvät ovat
+ jo tuttuun tapaan kohteen ryhmän mukaan.
+ Näiden alaotsikkojen linkit vievät kaikki kohteen perustietojen
+\begin_inset LatexCommand \index{kohde, perustiedot}
+
+\end_inset 
+
+ muokkausnäkymään (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Kohteen muokkausnäkymä}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Kohteen muokkausnäkymä}
+
+\end_inset 
+
+).
+ Poikkeuksen tekee myös mahdollinen viimeinen 
+\begin_inset Quotes eld
+\end_inset 
+
+Viittaukset muista kohteista
+\begin_inset Quotes erd
+\end_inset 
+
+ -otsikko, jonka alle on - kuten nimestä voi päätellä - koottu kaikkien
+ muiden kohteiden liitetiedoista näytettävään kohteeseen olevat viittaukset.
+ Ne on ryhmitelty alaotsikoihin viittauksen sisältäneiden liitetietojen
+ liitetietotyyppien mukaan.
+ Kohteiden nimet ovat linkkejä kyseisten kohteiden kohdenäkymiin.
+ Tämä tekee suhteista konkreettisella näkyvällä tavalla kaksisuuntaisia
+ (mitä ne tietokantarakenteessa jo ovat) ja mahdollistaa liikkumisen suhteiden
+ avulla molempiin suuntiin.
+\layout Paragraph
+
+Tietojen lisäys, poisto ja muokkaus
+\layout Standard
+
+Kohteelle lisätään liitetietoja valitsemalla ensin kohdenäkymän vasemmassa
+ yläkulmassa olevasta valintalistasta liitetietotyyppi.
+ Listassa on kaikki liitetietotyypit, jotka kuuluvat ryhmiin, joiden muokkausoik
+eus (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Käyttäjäoikeudet}
+
+\end_inset 
+
+) kirjautuneella käyttäjällä on.
+ Liitetietotyypin valinnan jälkeen painetaan 
+\begin_inset Quotes eld
+\end_inset 
+
+Lisää uusi
+\begin_inset Quotes erd
+\end_inset 
+
+ -painiketta.
+ Lomake lähettää pyynnön skriptille 
+\family typewriter 
+kohde_liite_insert.php
+\family default 
+ ja parametrina viedään valitun liitetyypin 
+\family typewriter 
+liiteid
+\family default 
+ ja näytettävän kohteen 
+\family typewriter 
+kohdeid
+\family default 
+.
+ Liitetiedon lisäys on liitetietotyyppikohtaisesti räätälöitävissä (ks.
+ luku  
+\begin_inset LatexCommand \ref{Laajennus}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{Laajennus}
+
+\end_inset 
+
+).
+ Oletustoiminto, joka suoritetaan, ellei valittua liitetietotyyppiä vastaavaa
+ lisäystoimintoa ole määritelty, lisää kohteelle annettua liitetietotyyppiä
+ olevan uuden tyhjän liitetiedon ja siirtyy liitetietonäkymään.
+\layout Standard
+
+Kohde poistetaan painamalla kohdenäkymän oikeassa yläkulmassa sijaitsevaa
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Poista tämä kohde
+\begin_inset Quotes erd
+\end_inset 
+
+ -painiketta.
+ Painike lähettää pyynnön skriptille 
+\family typewriter 
+kohde_del
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+ete.php
+\family default 
+ ja parametrina viedän poistettavan kohteen 
+\family typewriter 
+kohdeid
+\family default 
+.
+ Koska 
+\begin_inset Quotes eld
+\end_inset 
+
+undo
+\begin_inset Quotes erd
+\end_inset 
+
+ -toimintoa ei vielä toistaiseksi ole toteutettu, kysyy kohteen poisto varmistuk
+sen samaan tapaan kuin liitetiedon poisto (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Liitetiedon poisto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Liitetiedon poisto}
+
+\end_inset 
+
+).
+ Varmistuksen jälkeen tarkastetaan ensin, ettei kohteeseen ole viittauksia
+ muiden kohteiden liitetiedoissa, mikäli on, palataan takaisin kohdenäkymään
+ ja näytetään tästä kertova virheilmoitus.
+ Seuraavaksi tarkastetaan, että käyttäjällä on oikeus poistaa kohde (kirjoitusoi
+keus kohteen ja sen kaikkien liitetietojen ryhmiin).
+ Kohteen poistossa säilytetään tietokannan eheys koko operation ajan.
+ Yksi kerrallaan poistetaan ensin kaikki liitetiedot ja lopuksi itse kohde.
+ Liitetiedoista poistetaan ensin viittaukset, tiedostot ja jaksot ja lopuksi
+ itse liitetieto.
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 223
+file pics/kohde_muokkaa.eps
+subcaption Kohteen perustietojen muokkaus
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Kohteen muokkausnäkymä
+\begin_inset LatexCommand \label{fig: Kohteen muokkausnäkymä}
+
+\end_inset 
+
+
+\end_float 
+Kohteen perustietojen muokkaus tehdään kohteen muokkausnäkymässä (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Kohteen muokkausnäkymä}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Kohteen muokkausnäkymä}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+kohde_edit.php
+\family default 
+), johon pääsee kohdenäkymästä klikkaamalla mitä tahansa 
+\begin_inset Quotes eld
+\end_inset 
+
+Perustietoja
+\begin_inset Quotes erd
+\end_inset 
+
+ -otsikon alaotsikoista.
+ Jos kohteen ryhmää vaihdetaan, päivittyvät muiden kenttien nimet uuden
+ ryhmän määritysten mukaisiksi vasta, kun tieto ryhmän vaihtamisesta on
+ tallennettu.
+\layout Subsubsection
+
+Liitetietonäkymä
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 180
+file pics/kohde_liite.eps
+subcaption Liitetietonäkymä
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Liitetietonäkymä
+\begin_inset LatexCommand \label{fig: Liitetiedon muokkaus}
+
+\end_inset 
+
+
+\end_float 
+Liitetietonäkymän (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Liitetiedon muokkaus}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Liitetiedon muokkaus}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+kohde_liite_edit.php
+\family default 
+) oikeassa yläkulmassa on liitetiedon poistopainike.
+ Harmaan vaakaviivan alapuolella on lihavoidulla ja kursivoidulla kirjasimella
+ ladottuna litetietotyyppi ja sen alla tietosisältöjen mukaiset neljä otsikkoa:
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Vapaa teksti
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+Viittaukset
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+Jaksot
+\begin_inset Quotes erd
+\end_inset 
+
+ ja 
+\begin_inset Quotes eld
+\end_inset 
+
+Tiedostot
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Vapaata tekstiä lukuunottamatta kunkin otsikon alla on ensiksi kyseisen
+ tietosisällön lisäyslomake ja sen perässä nykyiset tiedot luettelona.
+ Vapaa teksti on kyseisen otsikon alla olevan muokkauslomakkeen teksti-ikkunassa.
+ Kursoriteksti on liitetietonäkymässä ollessa 
+\begin_inset Quotes eld
+\end_inset 
+
+Järjestelmän nimi > Tietokanta > Kohteen nimi > Liitetietotyyppi
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ 
+\layout Standard
+
+Liitetieto poistetaan näkymän oikean yläkulman painikkeella, kuten kohdekin.
+ Koska 
+\begin_inset Quotes eld
+\end_inset 
+
+undo
+\begin_inset Quotes erd
+\end_inset 
+
+ -toimintoa ei vielä toistaiseksi ole toteutettu, kysyy liitetiedon poisto
+ varmistuksen
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 92
+file pics/kohde_liite_poistovarmistus.eps
+subcaption Liitetiedon poisto
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Liitetiedon poisto
+\begin_inset LatexCommand \label{fig: Liitetiedon poisto}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Liitetiedon poisto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{fig: Liitetiedon poisto}
+
+\end_inset 
+
+).
+ Varmistuksen jälkeen tarkastetaan, että käyttäjällä on oikeus poistaa liitetiet
+o (kirjoitusoikeus liitetiedon ryhmään).
+ Liitetiedon poistossa säilytetään tietokannan eheys koko operation ajan.
+ Ensin poistetaan viittaukset, tiedostot ja jaksot ja vasta lopuksi itse
+ liitetieto.
+\layout Paragraph
+
+Vapaa teksti
+\layout Standard
+
+Tekstimuotoinen tieto tallennetaan 
+\family typewriter 
+kohde_liite
+\family default 
+ -taulun 
+\family typewriter 
+data
+\family default 
+ -kenttään, eli se on yksi liitetiedon kentistä.
+ Vapaan tekstin muokkauslomake on muiden tietosisältöjen lomakkeiden tapaan
+ oma erillinen lomakkeensa.
+ Tekstin muokkauksen jälkeen on painettava 
+\begin_inset Quotes eld
+\end_inset 
+
+Tallenna teksti
+\begin_inset Quotes erd
+\end_inset 
+
+ -painiketta ennen muiden tietosisältöjen muokkaamista, jotta tehdyt muutokset
+ tallentuisivat.
+ Vapaa teksti poistetaan tyhjentämällä tekstikenttä ja tallentamalla muutokset.
+ Tallennusskripti 
+\family typewriter 
+kohde_liite_update.php
+\family default 
+ varmistaa, että käyttäjällä on oikeus muokata kyseisen kohteen tietoja.
+\layout Paragraph
+
+Viittaukset
+\begin_inset LatexCommand \index{viittaus}
+
+\end_inset 
+
+
+\layout Standard
+
+Viittauksen tallennetaan omaan 
+\family typewriter 
+viittaus
+\family default 
+ -tauluunsa.
+ Viittaus kohteeseen luodaan painamalla 
+\begin_inset Quotes eld
+\end_inset 
+
+Lisää viittaus
+\begin_inset Quotes erd
+\end_inset 
+
+ paniketta.
+ Tekstikenttään voi halutessaan kirjoittaa kohteen nimen tai osan siitä
+ (vrt.
+ 
+\begin_inset LatexCommand \ref{sec: Tietokannan selausnäkymä}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Tietokannan selausnäkymä}
+
+\end_inset 
+
+).
+ Lomake lähettä pyynnön skriptille 
+\family typewriter 
+viittaus_insert.php
+\family default 
+ ja vie parametrina tekstikenttään kirjoitetun tekstin.
+ Lisäysskripti tarkistaa ensitöikseen käyttäjän oikeudet ja jatkaa vain
+ jos kirjaneella käyttäjällä on kirjoitusoikeus ryhmään, johon käsiteltävä
+ liitetieto kuuluu.
+ Jos tekstikettä oli tyhjä, skripti tekee edellenohjauksen kohteenvalintalistaan
+ (skriptin nimi 
+\family typewriter 
+kohteet.php
+\family default 
+)
+\begin_float footnote 
+\layout Standard
+
+Terävä havainto! Valintalista todellakin on täsmälleen sama skripti, kuin
+ tietokannan selausnäkymä 
+\family typewriter 
+kohteet.php
+\family default 
+.
+ Se on parametrisoitu siten, että sitä voidaan lähes mielivaltaisessa yhteydessä
+ käyttää kohteen valintaan tietokannasta.
+\end_float 
+, josta käyttäjä valitsee viittauksen kohteen.
+ Jos kentässä oli tekstiä, skripti (
+\family typewriter 
+viittaus_insert.php
+\family default 
+) etsii tietokannasta kaikki tuohon tekstiin täsmäävät kohteet.
+ Jos kenttään kirjoitettuun nimeen tai sen osaan täsmääviä kohteita löytyy
+ vain yksi, lisätään viitaus siihen ja palataan takaisin liitetietonäkymään,
+ muussa tapauksessa (kohteita löytyi useita tai ei ainuttakaan) tehdään
+ edelleenohjaus kohteenvalintalistaan ja viedään parametrina (kaikkien muiden
+ lisäksi) hakutekstin oletusarvoksi käyttäjän lisäyslomakkeen kenttään kirjoitta
+ma teksti.
+ Luodut viittaukset näkyvät liitetietonäkymässä listana viittauslomakkeen
+ alla.
+ Kuten kohdenäkymässäkin, ovat viittaukset linkkejä vastaavien kohteiden
+ kohdenäkymiin.
+ Lisäksi jokaisen viittauksen perässä on 
+\begin_inset Quotes eld
+\end_inset 
+
+[poista viittaus]
+\begin_inset Quotes erd
+\end_inset 
+
+ -linkki 
+\family typewriter 
+viittaus_delete.php
+\family default 
+ -skriptiin parametrina viittauksen 
+\family typewriter 
+liiteid
+\family default 
+ ja 
+\family typewriter 
+kohdeid
+\family default 
+.
+ Kyseinen skripti poistaa viittauksen ja palaa liitetietonäkymään.
+ Huomionarvoista on lisäksi se, että yhdestä liitetiedosta voi olla kuhunkin
+ kohteeseen vain yksi viittaus.
+ Tämä on taulumäärityksellä luotu rajoitus (viittauksen 
+\family typewriter 
+liiteid
+\family default 
+ ja 
+\family typewriter 
+kohdeid
+\family default 
+ ovat yhdessä sen 
+\begin_inset Quotes eld
+\end_inset 
+
+primary key
+\begin_inset Quotes erd
+\end_inset 
+
+).
+\layout Paragraph
+
+Jaksot
+\begin_inset LatexCommand \index{jakso}
+
+\end_inset 
+
+
+\layout Standard
+
+Myös jaksoilla on oma 
+\family typewriter 
+jakso
+\family default 
+ -taulunsa.
+ Jaksoja lisätään syöttämällä ajankohdat ja painamalla 
+\begin_inset Quotes eld
+\end_inset 
+
+Lisää jakso
+\begin_inset Quotes erd
+\end_inset 
+
+ -painiketta.
+ Lomake kutsuu 
+\family typewriter 
+jakso_inse rt.php
+\family default 
+ -skriptiä, joka suorittaa jakson lisäyksen ja palaa takaisin liitetietonäkymään.
+ Ensiksi tarkistetaan kirjautuneen käyttäjän oikeudet ja sitten ajankohtien
+ oikeellisuus.
+ Tyhjät tai ei-numeeriset kentät tulkitaan arvoiksi 0.
+ Vuosikentässä alle nelinumeroiseen arvoon lisätään 2000.
+ Jos ajankohdan kaikien kenttien alkuperäinen numeerinen arvo on 0 (kaikki
+ olivat tyhjiä tai ei-numeerisia) asetetaan kyseiseksi ajankohdaksi 
+\begin_inset Quotes eld
+\end_inset 
+
+ääriarvo
+\begin_inset Quotes erd
+\end_inset 
+
+, eli alkuajankohdan kyseessäollessa pienin ja loppuajan kyseessäollessa
+ suurin tietokannan kyseiselle kentälle sallima arvo.
+ Jaksot eivät ole linkkejä.
+ Ne poistetan kuten viittaukset.
+ Poiston hoitaa 
+\family typewriter 
+jakso_delete.php
+\family default 
+.
+\layout Paragraph
+
+Tiedostot
+\begin_inset LatexCommand \index{tiedosto}
+
+\end_inset 
+
+
+\layout Standard
+
+Tiedostot tallennetaan omaan 
+\family typewriter 
+tiedosto
+\family default 
+ -tauluunsa.
+ Tiedoston siirrossa palvelimelle ei käytetä http -protokollan tarjoamaa
+ PUT-metodia, vaan -- kuten tavallista -- POST-metodia, lomakkeen 
+\begin_inset Quotes eld
+\end_inset 
+
+multipart/form-data
+\begin_inset Quotes erd
+\end_inset 
+
+-en\SpecialChar \-
+koo\SpecialChar \-
+daus\SpecialChar \-
+ta ja 
+\begin_inset Quotes eld
+\end_inset 
+
+file
+\begin_inset Quotes erd
+\end_inset 
+
+-tyyppistä lomakekenttää.
+ Tiedoston koko on rajoitettu kahteen megatavuun.
+ Rajoitukset määräytyvät tietokannan, www-palvelimen ja php-tulkin asetuksista.
+ Tiedoston lisäyksen tekevä skripti 
+\family typewriter 
+tiedosto_insert.php
+\family default 
+ ei toistaiseksi mitenkään analysoi tiedoston sisältöä tai nimeä mime-tyypin
+ määritämiseksi, vaan luottaa lähettävän järjestelmän antamaan tyypin olevan
+ validi ja järkevä.
+ Tallennetut tiedostot näkyvät liitetietonäkymässä listana lisäyslomakkeen
+ jälkeen.
+ Jokainen tiedosto on kohdenäkymän kanssa identtiseen tapaan linkki tiedostoon
+ sellaisenaan.
+ Tiedosto poistetaan kuten jakso ja viittauksin, klikkaamalla sen perässä
+ olevaa poista-linkkiä.
+ Poiston hoitaa 
+\family typewriter 
+tiedosto_delete.php
+\family default 
+.
+\layout Paragraph
+
+Räätälöidyt näkymät
+\layout Standard
+
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 138
+file pics/kohde_liite_login.eps
+subcaption Liitetietonäkymä (login)
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Räätälöity liitetiedon muokkausnäkymä
+\begin_inset LatexCommand \label{fig: Loginille räätälöity kohde_liite}
+
+\end_inset 
+
+
+\end_float 
+Liitetietonäkymä on liitetietotyyppikohtaisesti rätälöitävissä.
+ Yllä on kuvattu oletusnäkymän toiminta, mutta liitetietonäkymä voi teoriassa
+ olla lähes millainen tahaa.
+ Mapin peruskonfiguraatioon kuuluu yksi räätälöity liitetietonäkymä.
+ Login -liitetiedon räätälöity näkymä (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Loginille räätälöity kohde_liite}
+
+\end_inset 
+
+ s.
+\begin_inset LatexCommand \pageref{fig: Loginille räätälöity kohde_liite}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+kohde_liite_edit_login.php
+\family default 
+) mahdollistaa vain järjestelmän toiminnan kannalta merkityksellisten tietosisäl
+töjen muokkaamisen ja pienentää näin virhemahdollisuuksia.
+\layout Subsubsection
+
+Raportit
+\begin_inset LatexCommand \label{sec: Raportit ja asetukset}
+
+\end_inset 
+
+
+\layout Standard
+
+Sekä raportit
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 92
+file pics/raportit.eps
+subcaption Raportit
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Raportit
+\begin_inset LatexCommand \label{fig: Raportit}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Raportit}
+
+\end_inset 
+
+), että asetukset (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Asetukset}
+
+\end_inset 
+
+) -sivujen sisältö muodostu ainoastaan otsikoiden alle ryhmitellyistä linkeistä
+ muihin näkymiin.
+ Nämä linkit luodaan dynaamisesti kappaleessa 
+\begin_inset LatexCommand \ref{Laajennus}
+
+\end_inset 
+
+ kuvatulla tavalla.
+ Niiden ei siten välttämättä tarvitse edes loogisesti kuulua Mappi -järjestelmää
+n saatika olla ulkoasultaan muiden näkymien kanssa yhtenäisiä.
+ Luonnollisesti se kuitenkin on järjestelmän laajennusosilta toivottava
+ ominaisuus.
+\layout Quote
+
+Esimerkkeinä oikeista raportesta käyvät hyvin Tulus-tietokannan lippuvarausrapor
+tti
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 129
+file pics/raportit_lippuvaraus.eps
+subcaption Lippuvaraus (Tulus)
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Esimerkkiraportti: Lippuvaraukset (ks.
+ luku 
+\begin_inset LatexCommand \ref{sec: Organisaation sis. tied. (Tulus)}
+
+\end_inset 
+
+)
+\begin_inset LatexCommand \label{fig: Lippuvaraukset-raportti}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva
+\begin_inset LatexCommand \ref{fig: Lippuvaraukset-raportti}
+
+\end_inset 
+
+), Haapaveden web-järjestelmän kaksoiskappaleraportti
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 109
+file pics/raportit_kaksoiskappaleet.eps
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Esimerkkiraportti: Kaksoiskappaleet (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Tiedotus (Haapavesi)}
+
+\end_inset 
+
+)
+\begin_inset LatexCommand \label{fig: kaksoiskappaleet -raportti}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: kaksoiskappaleet -raportti}
+
+\end_inset 
+
+) ja 
+\begin_inset Quotes eld
+\end_inset 
+
+Huomenna he tulevat
+\begin_inset Quotes erd
+\end_inset 
+
+ -näy\SpecialChar \-
+tel\SpecialChar \-
+mä\SpecialChar \-
+roo\SpecialChar \-
+lipeliprojektin rekursiivinen kohdenäkymä.
+\layout Quote
+
+Lippuvarausraportti on vain suoraviivainen koonti tietyn liitetietotyypin
+ avulla kohteisiin tehdyistä merkinnöistä.
+ Kohteiden nimet ovat linkkejä kyseisiin kohteisiin.
+\layout Quote
+
+Haapaveden web-järjestelmän kaksoiskappaleraportti on luettelo kohdepareista,
+ joilla 
+\begin_inset Quotes eld
+\end_inset 
+
+y-tunnus
+\begin_inset Quotes erd
+\end_inset 
+
+ -liitetieto on sama.
+ Kohteiden nimet ovat linkkejä kyseisiin kohteisiin.
+ Useiden tahojen toimesta ja osin automaattisesti ylläpidettävien yritys-
+ ja yhteisötietojen kanssa on vaarana käydä niin, että sama asia päätyy
+ tietokantaan pahimmillaan useammalla eri nimellä.
+ Häiriöttön pikasyöttö ja yhtaikaiset kattava tarkastukset, joilla seulotaan
+ epäillyt kaksoiskappaleet, on liki mahdoton toteutettava.
+ Yritysten ja yhteisöjen y-tunnus on uniikki tunniste, jonka perusteella
+ tietokannasta on nopea kaivaa esiin epäilyttävät kohteet.
+ Nimensä perusteella epäilyttävän samankaltaisten kohteiden hakuun on oma
+ raporttinsa.
+\layout Quote
+
+Rekursiivisen kohdenäkymän toimintaperiaatteen voi aavistaa jo nimensä perusteel
+la.
+ Se kokoaa yhdelle sivulle kaikki näytettävän kohteen tiedot ja lisäksi
+ myös kaikki niiden kohteiden tiedot, joihin näytettävästä kohteesta on
+ vähintään yksi viitaus.
+ Edelleen näytetään myös kaikki ne kohteet, joihin äsken näytetyistä kohteista
+ on vittauksia ja näin jatketaan kunnes näytetyissä kohteissa on viittauksia
+ ainoastaan näytettyihin kohteisiin.
+ Viittaukset ovat linkkejä kuten aikaisemminkin, mutta tällä kertaa linkkjä
+ saman sivun sisällä.
+ Kyseisessä näytelmäroolipeliprojektissa (HHT-projekti, ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Larp-organisointi (HHT)}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Larp-organisointi (HHT)}
+
+\end_inset 
+
+) tätä raporttia käytettiin keräämään kaikki kullekin pelaajalle lähetettävät
+ tiedot mukavasti yhteen tiedostoon.
+ Näin myös minimoitiin klassinen vaara lähettää pelaajalle jotain, mitä
+ hänen ehdottomasti ei tule tietää.
+\layout Standard
+
+Hiukan erilainen raportti (tai tarkalleen ottaen ei raportti laisinkaan,
+ koska kyse on tietojen syötöstä eikä tulostuksesta) on tietojen syöttö
+ tiedostosta.
+ Se on Mapin peruskonfiguraation ainut raportti.
+ Toiminta on jokseenkin samankaltainen taulukkolaskentaohjelmien tavanomaisen
+ tekstitiedoston tuontitoiminnon kanssa.
+ Lomakkeella annetaan tiedosto (upload kuten tiedoston lisäämisessä liitetietoon
+) ja määritellään kenttä- ja tietue-erottimet sekä ryhmä, johon tietueet
+ lisätään kohteina.
+ Seuraava vaihe näyttää annetun tiedoston sisällön jaettuna tietue-erottimien
+ kohdalta taulukon riveille ja kenttäerotimien kohdalta sarakkeisiin.
+ Viimeiseksi jokaiselle sarakkeelle määritellään sen yläpuolella olevan
+ valintalistan avulla merkitys.
+ Listassa on lueteltuna kohteen perustietokentät ja liitetiedot sekä lisäksi
+ ohita -kohta, jonka valinta aiheuttaa sen, ettei kyseisen sarakkeen tietoja
+ viedä tietokantaan.
+\layout Subsubsection
+
+Asetukset
+\begin_inset LatexCommand \label{sec: Asetukset}
+
+\end_inset 
+
+
+\layout Standard
+
+Asetukset -sivu
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 92
+file pics/asetukset.eps
+subcaption Asetukset
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Asetukset
+\begin_inset LatexCommand \label{fig: Asetukset}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Asetukset}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+asetukset.php
+\family default 
+), toimii samaan tapaan kuin raportit, mutta salasanan vaihto (
+\family typewriter 
+passwd.php
+\family default 
+) lisätään linkitettäviin 
+\begin_inset Quotes eld
+\end_inset 
+
+magian
+\begin_inset Quotes erd
+\end_inset 
+
+ avulla historiallisista syistä.
+ Kyseinen skripti nimittäin oli olemassa jo ennen geneeristä laajenusominaisuutt
+a ja yhteensopivuussyistä nimeä ei ole muutettu.
+\layout Standard
+
+Ryhmät -näkymä
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 165
+file pics/asetukset_ryhmat.eps
+subcaption Ryhmät
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Ryhmät
+\begin_inset LatexCommand \label{fig: Ryhmät}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Ryhmät}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+ryhmat.php
+\family default 
+) näyttää listan ryhmistä, jotka kirjautuneella käyttäjällä on oikeus nähdä.
+ Näkymän vasemmassa yläkulmassa on jo tuttuun Mappi-tapaan ryhmän lisäyslomake.
+ Uuden ryhmän lisäämisen hoitaa 
+\family typewriter 
+ryhma_insert.php
+\family default 
+, joka ryhmän lisättyään tekee edelleenohjauksen ryhmän muokkausnäkymään.
+ Ryhmien nimet ovat linkkejä ryhmän muokkausnäkymään
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 150
+file pics/asetukset_ryhmat_muokkaa.eps
+subcaption Ryhmän muokkaus
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Ryhmän muokkaus
+\begin_inset LatexCommand \label{fig: Ryhmäedit}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Ryhmäedit}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+ryhma_edit.php
+\family default 
+).
+ Muokkausnäkymän kentistä 
+\begin_inset Quotes eld
+\end_inset 
+
+nimi
+\begin_inset Quotes erd
+\end_inset 
+
+ on ryhmän nimi, 
+\begin_inset Quotes eld
+\end_inset 
+
+kohde_nimi
+\begin_inset Quotes erd
+\end_inset 
+
+, 
+\begin_inset Quotes eld
+\end_inset 
+
+kohde_nimi2
+\begin_inset Quotes erd
+\end_inset 
+
+ ja 
+\begin_inset Quotes eld
+\end_inset 
+
+kohde_data
+\begin_inset Quotes erd
+\end_inset 
+
+ määräävät kyseiseen ryhmään kuuluvan kohteen perustietokenttien (
+\family typewriter 
+nimi
+\family default 
+, 
+\family typewriter 
+nimi2
+\family default 
+ ja 
+\family typewriter 
+data
+\family default 
+) nimet.
+ Kaksi viimeistä kenttää eivät ole käytössä.
+\layout Standard
+
+Liitetietotyypit -näkymä
+\begin_float wide-fig 
+\layout Standard
+\align center 
+
+\begin_inset Figure size 238 219
+file pics/asetukset_liitteet.eps
+width 4 80.00
+flags 10
+
+\end_inset 
+
+
+\layout Caption
+
+Liitetietotyypit
+\begin_inset LatexCommand \label{fig: Liitetietotyypit}
+
+\end_inset 
+
+
+\end_float 
+ (ks.
+ kuva 
+\begin_inset LatexCommand \ref{fig: Liitetietotyypit}
+
+\end_inset 
+
+, skriptin nimi 
+\family typewriter 
+liitteet.php
+\family default 
+) ja liitetietotyyppien muokkausnäkymä (skriptin nimi 
+\family typewriter 
+liite_edit.php
+\family default 
+) vastaavat toiminnaltaan täysin edellä kuvattuja ryhmänäkymiä.
+ Muokattavana kohteena vain ovat ryhmien sijasta liitetietotyypit.
+\layout Section
+
+Uuden järjestelmän asennus ja käyttöönotto
+\layout Standard
+
+Mapin asennus ei ole millään muotoa mutkikas tehtävä.
+ Tässä luvussa kuvattujen toimenpiteiden jälkeen Mappi ja sen web-käyttöliittymä
+ ovat valmiita käytettäväksi.
+\layout Subsection
+
+Ohjelmistovaatimukset
+\begin_inset LatexCommand \label{Ohjelmistovaatimukset}
+
+\end_inset 
+
+
+\layout Standard
+
+Mappi-järjestelmän web-käyttöliittymä edellyttää tällä hetkellä 4.0.3 tai
+ uudempaa versiota PHP -tulkista, Apache WWW-palvelinta (testattu ainoastaan
+ 1.3.x -versioilla) ja MySQL -tietokantaa (testattu ainoastaan 3.23.x -versioilla).
+ Apachen ominaisuuksiin järjestelmä tukeutuu ainoastaan oman WWW-osoitteensa
+ määrittämiseksi.
+ Tämän pitäisi olla helposti toteutettavissa muihinkin palvelinympäristöihin.
+ Tietokannan käytössä ei ole mitään mikä sinänsä vaatisi MySQL:n ja koska
+ tietokantafunktiot on irroitettu omaksi kirjastokseen, on minkä tahansa
+ PHP:n tukeman tietokannan käyttö mahdollista pahimmillaankin toteuttamalla
+ uudelleen tietokantarutiinit sisältävä kirjasto.
+ Merkillepantavaa tässä yhteydessä on se, että Mappi nojaa tietueiden ensisijais
+ten avainten (
+\family typewriter 
+*id
+\family default 
+ -kentät) arvojen asettamisessa MySQL:n 
+\begin_inset Quotes eld
+\end_inset 
+
+auto increment
+\begin_inset Quotes erd
+\end_inset 
+
+
+\begin_inset LatexCommand \index{auto increment, MySQL}
+
+\end_inset 
+
+ -ominaisuuteen (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: taulumäärittelyt}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: taulumäärittelyt}
+
+\end_inset 
+
+).
+ Tietokannan, josta tämä tai vastaava ominaisuus puuttuu, käyttäminen saattaa
+ teettää jonkin verran lisätyötä.
+\layout Subsection
+
+Tietokanta
+\begin_inset LatexCommand \label{Tietokannan asennus}
+
+\end_inset 
+
+
+\layout Standard
+
+Luodaan uusi tyhjä tietokanta ja määritellään tietokannan omalla käyttäjäoikeusj
+ärjestelmällä uusi käyttäjä
+\begin_inset LatexCommand \index{tietokantakäyttäjä}
+
+\end_inset 
+
+, jolla on oikeus käsitellä kyseisen tietokannan sisältöä (insert, delete,
+ update), muttei muuttaa sen rakennetta (create, drop, alter).
+ Mainittu käyttäjän luonti ei ole täysin välttämätöntä, mutta kuitenkin
+ erittäin suositeltava käytäntö tietoturvan
+\begin_inset LatexCommand \index{tietoturva}
+
+\end_inset 
+
+ ylläpitämiseksi.
+\layout Standard
+
+Tietokannan rakenne (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: taulumäärittelyt}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: taulumäärittelyt}
+
+\end_inset 
+
+) ja minimisisältö
+\begin_inset LatexCommand \index{minimitietokanta}
+
+\end_inset 
+
+ (katso 
+\begin_inset LatexCommand \ref{sec: minimidata}
+
+\end_inset 
+
+ sivulla 
+\begin_inset LatexCommand \pageref{sec: minimidata}
+
+\end_inset 
+
+) luodaan ajamalla tietokannan hallintajärjestelmällä kyseiset SQL-komentosarjat.
+ Sen jälkeen tietokanta on valmis käyttöön.
+\layout Subsection
+
+Käyttöliittymä
+\begin_inset LatexCommand \label{Käyttöliittymän asennus}
+
+\end_inset 
+
+
+\layout Standard
+
+Tällä hetkellä käyttöliittymä on jaettu mapin runkokirjastoihin (yleensä
+ 
+\family typewriter 
+mappi_ lib.tar.gz
+\family default 
+) ja itse käyttöliittymän toteutukseen (yleensä 
+\family typewriter 
+mappi.tar.gz
+\family default 
+ tai 
+\family typewriter 
+mappi_web.tar.gz
+\family default 
+).
+ Järjestelmään liittyvien yleisten kirjastojen tulee löytyä PHP:n kirjastopolun
+ alihakemistosta 
+\family typewriter 
+MAPPI
+\family default 
+.
+ GNU/Linux -järjestelmissä tämä useinmiten tarkoittaa kirjastotiedostojen
+ sijoittamista hakemistoon 
+\family typewriter 
+/usr/lib/
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+php4/MAPPI
+\family default 
+.
+ Käyttöliittymäskriptit sijoitetaan johonkin WWW-palvelimen kautta 
+\begin_inset Quotes eld
+\end_inset 
+
+ulos
+\begin_inset Quotes erd
+\end_inset 
+
+ näkyvään kansioon.
+ Käyttöliittymäskriptien joukossa on tiedosto 
+\family typewriter 
+map
+\latex latex 
+
+\backslash 
+br{}
+\latex default 
+pi_rc.php
+\begin_inset LatexCommand \index{asetustiedosto}
+
+\end_inset 
+
+
+\family default 
+ (ks.
+ luku  
+\begin_inset LatexCommand \ref{RC-tiedosto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{RC-tiedosto}
+
+\end_inset 
+
+), jossa olevat asetukset täytyy muuttaa vastaamaan käyttöönotettavaa järjestelm
+ää.
+ Olennaisia ovat seuraavat rivit
+\layout LyX-Code
+
+$settings['dbengine']
+\protected_separator 
+
+\protected_separator 
+ = 'mysql';
+\layout LyX-Code
+
+$settings['db']
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = 'tietokannan_nimi';
+\layout LyX-Code
+
+$settings['host']
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = 'kone.jossa.tietokanta.on';
+\layout LyX-Code
+
+$settings['user']
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = 'tietokantakäyttäjä';
+\begin_inset LatexCommand \index{tietokantakäyttäjä}
+
+\end_inset 
+
+
+\layout LyX-Code
+
+$settings['pw']
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = 'tietokannansalasana';
+\layout LyX-Code
+
+$settings['name']
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+
+\protected_separator 
+ = 'Joku nimi';
+\layout LyX-Code
+
+$settings['logfile'] 
+\protected_separator 
+ 
+\protected_separator 
+= '/var/log/mappi.log';
+\layout Standard
+
+
+\family typewriter 
+dbengine
+\family default 
+ määrää peruskirjaston lataaman lisäkirjaston nimen.
+ Kyseinen lisäkirjasto sisältää tietokantarutiinien toteutukset.
+ 
+\family typewriter 
+db
+\family default 
+, 
+\family typewriter 
+host
+\family default 
+, 
+\family typewriter 
+user
+\family default 
+ ja 
+\family typewriter 
+pw
+\family default 
+ määräävät kirjautumisen tietokantaan.
+ Järjestelmän nimellä (
+\family typewriter 
+name
+\family default 
+) ei ole mitään toiminnallista merkitystä.
+ Nimi näytetään osana käyttöliittymän otsikkoa
+\begin_inset LatexCommand \label{järjestelmän nimi}
+
+\end_inset 
+
+.
+ 
+\family typewriter 
+logfile
+\family default 
+ määrää tiedoston, jonne mappi kirjoittaa lokinsa
+\begin_inset LatexCommand \index{lokitiedosto}
+
+\end_inset 
+
+.
+ Windows -järjestelmissä se täytyy muuttaa muotoon 
+\family typewriter 
+'X:
+\backslash 
+
+\backslash 
+LOKI
+\backslash 
+
+\backslash 
+POLKU
+\backslash 
+
+\backslash 
+MAPPI.LOG'
+\family default 
+.
+ Lisäksi mainittakoon mukavuustekijänä, että WWW-palvelin on hyvä asettaa
+ hyväksymään indeksitiedostoksi myös 
+\family typewriter 
+index.php
+\family default 
+.
+\layout Standard
+
+Edellä lueteltujen toimenpiteiden jälkeen järjestelmä web-käyttöliittymineen
+ on valmis käytettäväksi.
+\layout Section
+
+Esimerkkisovellutuksia
+\begin_inset LatexCommand \label{sec: Esimerkkisovellutuksia}
+
+\end_inset 
+
+
+\layout Standard
+
+Kun puhutaan ihan oikeasta tosielämän käyttöön tarkoitetusta sovelluksesta,
+ tuovat esimerkit parhaiten lihaa luiden ympärille.
+ Seuraavaksi syvennetään kuvaa Mapista käymällä tiiviinä esityksenä läpi
+ muutamia käyttötapauksia.
+\layout Subsection
+
+Yleistä
+\layout Standard
+
+Kaikissa seuraavissa esimerkkien selostuksissa lähdetään liikkeelle tilanteesta,
+ jossa mappi on asennettu ja konfiguroitu (ks.
+ luvut 
+\begin_inset LatexCommand \ref{Ohjelmistovaatimukset}
+
+\end_inset 
+
+, 
+\begin_inset LatexCommand \ref{Tietokannan asennus}
+
+\end_inset 
+
+ ja 
+\begin_inset LatexCommand \ref{Käyttöliittymän asennus}
+
+\end_inset 
+
+).
+ Ryhmien ja liitetietotyyppien kulloinkin selostetut merkitykset ovat luonnollis
+esti tapauskohtaisia sopimuksia, eikä niillä ole minkäänlaista yleispätevää
+ sitovuutta.
+ Mikäli jollain järjestelmällä on useita käyttäjiä kannattaa ryhmien ja
+ liitetietotyyppien käytöstä sopia varsin yksityiskohtaisesti, koska järjestelmä
+ ei anna mitään mahdollisuuksia esim.
+ rajata liitetietotyyppejä vain johonkin tiettyyn käyttöön.
+\layout Subsection
+
+Henkilökohtainen muistio
+\layout Standard
+
+Henkilökohtaisen tiedon organisointiväline ja muistio on mapin avulla toteutetta
+vissa helposti ja nopeasti.
+ Sujuva numeromuotoisen tiedon käsittely ja kalenterikäyttö tosin vaatisivat
+ pitkällisempää räätälöintiä, joten niistä on luovuttava 
+\begin_inset Quotes eld
+\end_inset 
+
+helposti
+\begin_inset Quotes erd
+\end_inset 
+
+ -lupauksen lunastamiseksi.
+\layout Subsubsection
+
+Ryhmät
+\layout Description
+
+Henkilöt Ryhmän kohteiden merkitys pitäisi selvitä nimestä.
+ 
+\layout Description
+
+Viiteryhmät Ryhmään kerätään kaikki ompeluseuroista sählypuulaakijoukkueisiin.
+ Tiettyyn viiteryhmään kuuluvat henkilöt merkitään lisäämällä viiteryhmälle
+ liitetieto 
+\begin_inset Quotes eld
+\end_inset 
+
+Jäsenet
+\begin_inset Quotes erd
+\end_inset 
+
+, josta viittaus kaikkiin ryhmään kuuluviin.
+ Erikoisasemassa olevat henkilöt voi merkitä lisäämällä jokaista kohden
+ liitetiedon 
+\begin_inset Quotes eld
+\end_inset 
+
+Vastuuhenkilö
+\begin_inset Quotes erd
+\end_inset 
+
+, jonka tekstikenttään kirjoitetaan tehtävänimike ja josta tehdään viittaus
+ kyseiseen henkilöön.
+\layout Description
+
+Tehtävät Ryhmä toimii muistilappuläjän korvikkeena.
+ Kohteen luonteesta johtuen kannattaa tehdä siten, että ensimmäinen nimikenttä
+ on 
+\begin_inset Quotes eld
+\end_inset 
+
+Nimi
+\begin_inset Quotes erd
+\end_inset 
+
+ ja toinen 
+\begin_inset Quotes eld
+\end_inset 
+
+Päiväys
+\begin_inset Quotes erd
+\end_inset 
+
+, joka kirjoitetaan muodossa vvvv-kk-pp, jolloin tehtävät menevät automaattisest
+i listoilla aikajärjestykseen, koska järjestäminen tapahtuu ensisijaisesti
+ toisen kentän mukaan ja toissijaisesti ensimmäisen kentän mukaan.
+ Tehtäviin liittyy usein henkilöitä tai viiteryhmiä.
+ Tämä voidaan ilmoittaa siten, että tehtävälle lisätään liitetieto 
+\begin_inset Quotes eld
+\end_inset 
+
+Katso myös
+\begin_inset Quotes erd
+\end_inset 
+
+, jonka tekstikenttä kertoo miten ko.
+ kohde tehtävään liittyy ja josta tehdään viittaus ko.
+ kohteeseen.
+\layout Description
+
+Yhteystiedot Liitetietotyyppien ryhmittelyä varten
+\layout Description
+
+Yleistiedot Ks.
+ ed.
+\layout Subsubsection
+
+Liitetietotyypit
+\layout Description
+
+Vastuuhenkilö Kuuluu ryhmään 
+\begin_inset Quotes eld
+\end_inset 
+
+Henkilöt
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Käytetään ilmaisemaan henkilön erityisasemaa viiteryhmässä.
+ Liitetieto lisätään viiteryhmälle, tekstiksi aseman kuvaus (esim.
+ tehtävänimike) ja lisäksi viittaus aseman omaavaan henkilöön.
+\layout Description
+
+Jäsenet Kuuluu ryhmään 
+\begin_inset Quotes eld
+\end_inset 
+
+Henkilöt
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Käytetään ilmaisemaan henkilöiden kuulumista viiteryhmään.
+ Liitetieto lisätään viiteryhmälle ja liitetiedosta tehdään viittaukset
+ ryhmään kuuluviin henkilöihin.
+\layout Description
+
+Katso
+\protected_separator 
+myös Kuuluu ryhmään 
+\begin_inset Quotes eld
+\end_inset 
+
+Yleistiedot
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Voidaan käyttää vapaasti missä yhteydessä tahansa.
+ Teksti kertoo syyn ja viittaukset kertovat muut kohteet, joiden tiedot
+ on myös syytä nähdä.
+\layout Description
+
+Postiosoite
+\protected_separator 
+Sähköpostiosoite
+\protected_separator 
+Puhelinnumero Kuuluvat ryhmään 
+\begin_inset Quotes eld
+\end_inset 
+
+Yhteystiedot
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Voidaan vapaasti käyttää henkilöille ja viiteryhmille.
+ Tekstisisältönä itse tieto.
+\layout Subsubsection
+
+Jatkoräätälöinti
+\layout Standard
+
+Käytön edetessä järjestelmä laajenee luontevasti tarpeiden mukana.
+ Peruskäyttöliittymän ja näkymien rajoittuneisuuden vuoksi tulee varsin
+ nopeasti eteen ominaisuuksien laajentaminen omia raportteja ja tiedon syöttöä
+ automatisoivia skriptejä käyttäen.
+ Tämä luonnollisesti vaatii jonkinverran ohjelmointitaitoa ja järjestelmään
+ perehtymistä, joten mappi ei ole aivan jokamiehen laajennettavissa.
+\layout Subsection
+
+Organisaation sisäinen tiedotus
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec: Organisaation sis. tied. (Tulus)}
+
+\end_inset 
+
+ Lähdin gospelkkuoro Tuluksen toimintaan mukaan tullessani Jyväskylään vuonna
+ 1997.
+ Mappi on ollut Tuluksen sisäisen tiedotuksen korvaamaton työkalu ensimmäisestä
+ prototyypistään alkaen (vrt.
+ 
+\begin_inset LatexCommand \ref{sec: proto_tulusyllapito}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: proto_tulusyllapito}
+
+\end_inset 
+
+).
+ Tuluksen nykyinen intranet on rakennettu tiiviisti Mapin ympärille.
+ Mappi-tietokannassa on entisten ja nykyisten kuorolaisten, bändiläisten
+ ja muiden avustajien tiedot, konsertit, treenit ja muut tapahtumat, tiedotuskon
+taktit ja erilaiset ohjeistot.
+ Mapin web-käyttöliittymään on oikeudet vain muutamilla tietoja ylläpitävillä.
+ Intranetissä on suoraan tarjolla kuorolaisten tarvitsemat näkymät tietokantaan:
+ Kalenteri, josta näkee tulevat tapahtumat, kuoron sisäisten ryhmien (bändiläise
+t, sopraanot, teematiimi, jne.) jäsenten sähköpostiosoitteet, aktiivikuorolaisten
+ yhteystiedot web-sivuna tai pdf-tiedostona (luodaan 
+\latex latex 
+
+\backslash 
+LaTeX
+\latex default 
+ -dokumenttipohjan ja sopivan raportin avulla palvelimella automaattisesti)
+ ja tiimilista, josta näkee tiimit, niiden tehtävät, vetäjien yhteystiedot
+ ja jäsenten nimet.
+\layout Subsection
+
+Näytelmäroolipelin organisointi ja käsikirjoitus 
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec: Larp-organisointi (HHT)}
+
+\end_inset 
+
+Maahinkainen ry:n (
+\family sans 
+http://www.maahinkainen.org/
+\family default 
+) apokalyptistä tieteisfantasiaa tyylittelevän näytelmäroolipeliprojektin
+ 
+\begin_inset Quotes eld
+\end_inset 
+
+Huomenna he tulevat
+\begin_inset Quotes erd
+\end_inset 
+
+ käsikirjoitus tehtiin 
+\begin_inset Quotes eld
+\end_inset 
+
+extreme programing
+\begin_inset Quotes erd
+\end_inset 
+
+ -tyyliin
+\begin_float footnote 
+\layout Standard
+
+Kirjoittajatiimi tekee työtä yhdessä tilassa kirjoittaen ja kommentoiden
+ tuoreeltaan toisten kirjoituksia.
+ Mikään ei ole 
+\begin_inset Quotes eld
+\end_inset 
+
+pyhää
+\begin_inset Quotes erd
+\end_inset 
+
+, vaan kaikki voivat tehdä muutoksia minne tahansa ja koska tahansa.
+\end_float 
+ käyttäen tiedot jakavana ryhmätyövälineenä Mapin ensimmäistä versiota.
+ 
+\layout Standard
+
+Ennen varsinaisen käsikirjoitusprosessin aloittamista oli kirjoittajatiimi
+ kokoontunut muutamien kuukausien ajan säännöllisesti kerran viikossa keskustele
+maan pelimaailmasta, tarinasta, juonesta ja sen sellaisesta päämääränään
+ saada kirjoittajien 
+\begin_inset Quotes eld
+\end_inset 
+
+maailmankuvat
+\begin_inset Quotes erd
+\end_inset 
+
+ mahdollisimman yhtenäisiksi.
+ Käsikirjoitus tehtiin yhden viikonlopun aikana Invalidiliiton Jyväskylän
+ koulutuspisteen mikroluokassa, joka oli tarkoitusta varten saatu käyttöön.
+ Yhteen paikallisverkon koneista oli asennettu Mappi, jota kirjoittajat
+ muilta koneilta käsin selaimen avulla käyttivät.
+ Olin tehnyt kirjoittajille valmiiksi käyttäjätunnukset ja pelihahmojen
+ ja pelimaailman tietojen tallentamiseen sopivan metarakenteen.
+ Homma alkoi puolen tunnin Mappi-koulutuksella, jonka jälkeen uskalsin hyvin
+ jättää kirjoittajaporukan viikonlopuksi rauhaan tekemään työtään.
+ Osalle kirjoittajista Mapin toinen prototyyppi oli nimittäin tuttu edellisen
+ peliprojektin organisointityövälineenä.
+ 
+\layout Standard
+
+Sunnuntaina oli käsikirjoitus koko komeudessaan valmis.
+ Henkilöhahmojen kuvaukset, henkilöiden muodostamat viiteryhmät, tapahtumat,
+ paikat, jne.
+ kaikki kytkettynä viittauksilla toisiinsa asiayhteyksien mukaan.
+ Sopivalla raportilla (ks.
+ luku  
+\begin_inset LatexCommand \ref{sec: Raportit ja asetukset}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Raportit ja asetukset}
+
+\end_inset 
+
+) tietokannasta saatiin helposti ja kauniisti kerralla esiin kaikki, mitä
+ yhden osallistujan tarvitsee hahmostaan, pelimaailmasta ja kaikesta siihen
+ liittyvästä tietää ja vain se, mitä hän siitä saa tietää.
+\layout Subsection
+
+Organisaation julkinen tiedotus
+\layout Standard
+
+
+\begin_inset LatexCommand \label{sec: Tiedotus (Haapavesi)}
+
+\end_inset 
+
+Haapaveden kaupunki tilasi tammikuussa 2001 Mediaseitiltä uuden web-jär\SpecialChar \-
+jes\SpecialChar \-
+tel\SpecialChar \-
+män
+ suunnittelun ja toteutuksen.
+ Järjestelmän vaatimuksiin kuului mm.
+ uutisarkisto, palveluhakemisto, yritysluettelo, kaupungin puhelinluettelo,
+ avointen työpaikkojen rekisteri, tapahtumakalenteri, palauterekisteri ja
+ eri toimielinten pöytäkirja-arkisto tärkeimmät mainitakseni.
+ 
+\layout Standard
+
+Sisällönhallintajärjestelmän tehtävään istutettiin Mappi ja kokonaisuus
+ koottiin sen ympärille.
+ Kaikista muokattavista, haettavista tai arkistoitavista asioista tehtiin
+ tietokantakohteita ja tarvittavien tietojen tallennusta varten suunniteltiin
+ soveltuva metatietorakenne.
+ Järjestelmään tehtiin kaksi suurempaa yhtenäistä näkymäkokonaisuutta, joista
+ toinen on kaupungin julkinen web-sivusto ja toinen Mappi-järjestelmän web-käytt
+öliittymä tarvittavilla lisäominaisuuksilla laajennettuna.
+ 
+\layout Standard
+
+Julkisen sivuston ydin on PHPLib
+\begin_float footnote 
+\layout Standard
+
+
+\family sans 
+http://sourceforge.net/projects/phplib/
+\end_float 
+ -työkalukirjaston ulkoasumalleihin
+\begin_inset LatexCommand \index{ulkoasumalli}
+
+\end_inset 
+
+
+\begin_inset LatexCommand \index{template}
+
+\end_inset 
+
+ (templates) pohjautuva koostaja.
+ Ulkoasumallien käyttö helpotti merkittävästi sivuston sisällön ja ulkoasun
+ erottamista toisistaan.
+ Navigointiin käytettävä valikko on oma alijärjestelmänsä.
+ Valikkomäärittely on suorituskykysyistä tallennettu tietokantarakenteen
+ sijasta tiedostoon.
+ Mapin yksinkertaisen ja geneerisen perusrakenteen ansiosta julkisella sivustoll
+a tarvitaan (kuten Mapin web-käyttöliittymässäkin) ainoastaan yksi näkymä,
+ jolla voidaan esittää kaikki kohteet avoimista työpaikoista uutisiin.
+ Julkisen sivuston kohdenäkymässä viittaukset ja tiedostot ovat samaan tapaan
+ toimivia linkkejä, kuin Mapin web-käyttöliittymässäkin.
+ Näin asioiden väliset suhteet ovat näkyvillä ja helposti seurattavissa.
+ Yksinkertaista rakennetta voitiin hyödyntää myös käyttämällä samaa hakunäkymää
+ järjestöjen, kaupungin organisaatioiden, avointen työpaikkojen ja yritysten
+ vapaaseen tekstihakuun tietokannasta.
+\layout Standard
+
+Mapin web-käyttöliittymää ei muutettu millään tavalla, sita ainoastaan laajennet
+tiin tarvittavilla raporteilla ja tietojen syöttöä helpottavilla räätälöidyillä
+ kohteiden lisäysskripteillä.
+ Esim.
+ uuden pöytäkirjan lisääminen arkistoon tapahtuu seuraavasti: Ensiksi valitaan
+ tietokannan selausnäkymän vasemman yläkulman listasta 
+\begin_inset Quotes eld
+\end_inset 
+
+Asiakirja
+\begin_inset Quotes erd
+\end_inset 
+
+ ja klikataan 
+\begin_inset Quotes eld
+\end_inset 
+
+Lisää uusi kohde ryhmään
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Seuraavaksi valitaan lisätäänkö geneerinen tyhjä asiakirjakohde, vaiko
+ uusi pöytäkirja.
+ Kun on päätetty lisätä pöytäkirja, täytetään seuraava lomake valitsemalla
+ listasta pöytäkirjan julkaisija, kirjoittamalla pöytäkirjan päiväys sille
+ tarkoitettuun kenttään, kopioimalla pöytäkirjan sisällysluettelo (tai kokouksen
+ esityslista) sille tarkoitettuun ikkunaan ja hakemalla asianmukaiset tiedostot
+ niille varattuihin kenttiin.
+ Asiakirjan lisääminen kaikkine kommervenkkeineen hoituu sen jälkeen automaattis
+esti.
+ Järjestelmä tallentaa asiakirjan alkuperäisessä tekstinkäsittelyohjelman
+ formaatissa, PostScript -muodossa
+\begin_float footnote 
+\layout Standard
+
+PostScript -muoto tuotetaan tulostamalla asiakirja tiedostoon käyttäen PostScrip
+t -tulostimen ajuria.
+\end_float 
+ ja siitä automaattisesti generoidussa PDF-muodossa.
+ Erilaisia käyttöä ja tietojen vientiä eteenpäin muihin järjestelmiin helpottavi
+a raportteja on lisätty järjestelmään tarpeen mukaan.
+ 
+\layout Section
+
+Ajatuksia nykytilasta ja jatkokehittämisestä
+\layout Standard
+
+Missä vuosia kestäneen vähittäisen kehityksen tuloksen tällä hetkellä ollaan?
+ Mitä tehdä seuravaksi? Sovelluskehitys on jatkuvaa nykytilanteen arviointia
+ ja tulevaisuuden suunnittelua.
+ Seuraavassa arvioita, haaveita ja toiveita Mapin suhteen.
+\layout Subsection
+
+Ongelmatilanteita
+\layout Standard
+
+Kohteiden liitetiedoilta ja viitauksilta saatetaan edellyttää sisältönsä
+ lisäksi myös keskinäistä järjestystä, joka ei välttämättä ole millään tavalla
+ dedusoitavissa muusta datasta.
+ Organisaatioiden luottamushenkilöiden (tärkeys)järjestystä saatetaan pitää
+ hyvinkin olennaisena asiana.
+ Tämä ei nykyisellä järjestelmällä ole toteutettavissa, mutta on seuraavassa
+ versiossa implementoitavien lisäominaisuuksien listalla.
+\begin_float footnote 
+\layout Standard
+
+Liitetietojen ja viittausten järjestyksen eksplisiittisen määrittelyn sisältävä
+ järjestelmäversio on tätä kirjoittaessa (28.3.2002) jo valmistunut, mutta
+ koska tämä dokumentti käsittelee järjestelmän aiempaa (syyskuu 2001) versiota,
+ annan jo käsiteltyjen ongelmien olla.
+\end_float 
+\layout Standard
+
+
+\begin_inset LatexCommand \index{jakso, toistuva}
+
+\end_inset 
+
+Toistuvat jaksot ovat ongelmatapaus, johon ei näillänäkymin ole parannusta
+ suunnitteilla.
+ Toistaiseksi en ole sovelluskohteissa törmännyt riittävän kovaan toistuvien
+ jaksojen määrittelyn tarpeeseen.
+\layout Standard
+
+Jo sähköisessä muodossa olevan datan syöttö ei nykyisellä järjestelmällä
+ ole mitenkään erityisen kätevää.
+ Valmiiksi taulukkomuodossa olevan datan syöttöä varten on raporteissa (väärä
+ paikka, joka johtuu käyttöliittymän komponenttien hassusta ryhmittelystä,
+ joka on oma ongelmatapaus sinänsä) olemassa hiukan Excelin tekstimuotoisen
+ taulukon tuontiwizardia muistuttava työkalu, jolla suurin osa massasyötön
+ tarpeista voidaan kattaa.
+ Liitteitä, jaksoja ja tiedostoja ei järjestelmällä voi kuitenkaan millään
+ tavalla syöttää suuria määriä kerrallaan, vaan kaikki on tehtävä yksitellen
+ tai jollain omalla työkalulla.
+\layout Standard
+
+Useiden Mappi-tietokantojen asennus ja käsittely on nykyjärjestelmällä ongelmall
+ista.
+ Käytettävä tietokanta on määriteltynä asetustiedostossa, joka taas on järjestel
+mässä 
+\begin_inset Quotes eld
+\end_inset 
+
+kiveen piirretty
+\begin_inset Quotes erd
+\end_inset 
+
+.
+ Tästä syystä jokainen tietokanta vaatii myös oman Mappi-asennuksensa.
+ Järjestelmän kirjastohakemisto voidaan onneksi jakaa eri järjestelmien
+ kesken.
+\layout Standard
+
+Useita samalla koneella saman domain-nimen alla sijaitsevia Mappi-asennuksia
+ vaivaa php-tulkin istunnonhallinnasta johtuva tietoturvaongelma
+\begin_inset LatexCommand \index{tietoturva}
+
+\end_inset 
+
+.
+ Kirjautumalla yhteen järjestelmistä ja sen jälkeen kirjoittamalla selaimen
+ osoiteriville jonkin toisen osoite, on mahdollista käyttää muitakin järjestelmi
+ä, vaikkei ensimmäiseen järjestelmään kirjautuneella käyttäjällä olisikaan
+ tunnuksia muihin.
+ Ongelman ratkaisu on helppo, mutta se rikkoo taaksepäin yhteensopivuuden,
+ joten se odottelee kiltisti järjestelmän uudelleensuunnittelua ja kolmannen
+ sukupolven Mappia.
+ Ongelmaan on olemassa myös kikkailuratkaisu.
+ Tietokantojen oikeudet voidaan pitää pääkäyttäjän oikeuksia (oikeudet muuttaa
+ ryhmiä ja oikeusprofiileja) lukuunottamatta erillään, vaikka yhden tunnuksilla
+ näennäisesti pääsisikin sisään muihin.
+ Tämä hoituu siten, että pidetään 
+\family typewriter 
+ryhma
+\family default 
+ -taulun 
+\family typewriter 
+ryhmaid
+\family default 
+ -kentät ainutkertaisina (jokainen numero on vain ja ainoastaan yhden ryhmän
+ tunniste) alustamalla ensimmäisen luodun ryhmän tunnisteet tietokannan
+ kautta käsin riittävän kauas toisistaan.
+\layout Standard
+
+Roskakorin ja 
+\begin_inset Quotes eld
+\end_inset 
+
+kumoa
+\begin_inset Quotes erd
+\end_inset 
+
+ -toiminnon puuttuminen aiheuttaa turhaa lopullisuuden tunnetta ja on hyvien
+ sovellussuunnitteluperiaatteiden vastaista.
+ Kaikki Mapin toiminnot eivät myöskään ole keskeytettävissä.
+ Näissä ominaisuuksissa onkin haastetta seuraavaa versiota ajatellen.
+\layout Standard
+
+Kirjautumisen kulkeminen pääsivun kautta (ks.
+ luku 
+\begin_inset LatexCommand \ref{sec: Kirjautuminen ja istunto}
+
+\end_inset 
+
+ s.
+ 
+\begin_inset LatexCommand \pageref{sec: Kirjautuminen ja istunto}
+
+\end_inset 
+
+) aiheuttaa sen, että linkkejä 
+\begin_inset Quotes eld
+\end_inset 
+
+ulkoa
+\begin_inset Quotes erd
+\end_inset 
+
+ suoraan järjestelmän sisään ei nykyisellään voi toimivalla tavalla toteuttaa.
+ Kirjautumisen hoitamista omana erillisenä toimintonaan, eikä osana yhtä
+ sivua tarvitsisi monikin miellyttävä ominaisuus.
+ Jo useita kertoja on ollut tarvetta julkisella sivustolla olevalle 
+\begin_inset Quotes eld
+\end_inset 
+
+muokka tätä
+\begin_inset Quotes erd
+\end_inset 
+
+ -linkille, joka veisi suoraan Mapin web-käyttöliittymän sisään oikeaan
+ näkymään.
+\layout Standard
+
+Lokitiedoston
+\begin_inset LatexCommand \index{lokitiedosto}
+
+\end_inset 
+
+ kerääminen järjestelmän toiminnasta on vielä kovasti lapsenkengissä.
+ Sitä täytyisi ehdottomasti saada kattavammaksi.
+ Tällä hetkellä tiedostoon kirjautuu vain ehdottoman välttämätön.
+ Lopullisena tavoitteena on olla täysin itsensä selittävä, eli ettei levottoman
+ puheliaan MySQL:n lokeja tarvitsisi alkaa aina kaivelemaan saadakseen tietoonsa
+ mitä on tapahtunut.
+\layout Subsection
+
+Teknisiä ajatelmia
+\layout Standard
+
+Uudelleenkirjoituksen tarve on tällä hetkellä ilmeinen, koska koodi on hajanaist
+a.
+ Olen mappia kehittäessäni harrastanut imperatiivista- ja olio-ohjelmointia
+ sulassa sekasotkussa vailla sen täsmällisempää visiota.
+ Seuraava askel on siirtyminen puhtaasti olioparadigmaan.
+\layout Standard
+
+Peruskäyttöliittymän nykyinen monen pienen yhden asian skriptin rakenne
+ aiheuttaa pieniä kiusallisia ongelmia mm.
+ tiedon syötön yhteydessä.
+ Kunnollinen modularisointi pakottaa käyttämään http -protokollan dokumentin
+ edelleenohjausta ja aiheuttaa muutenkin ylimääräisiä harmaita hiuksia.
+ Peruskäyttöliittymän koodaus uudelleen siten, että kaikki toiminnot ovat
+ (toki edelleen modulaarisesti toteutettuina) yhden pyynnönkäsittelijänä
+ toimivan skriptin takana selkeyttäisi koodia huomattavasti.
+\layout Standard
+
+Tietokantariippumattomuuden voi toteuttaa huomattavasti nykyistä kauniimmin
+ ja jouhevammin.
+ Oliopohjaisuus mahdollistaisi kunnollisen kapseloinnin.
+\layout Standard
+
+Peruskäyttöliittymän yleinen konfiguroituvuus ja etenkin ulkoasun räätälöintimah
+dollisuudet ovat tällä hetkellä - vaikkakin käyttökepoisia - hiukan kömpelöitä.
+ Ulkoasun täydellinen erottaminen koodista ulkoasumalleja 
+\begin_inset LatexCommand \index{ulkoasumalli}
+
+\end_inset 
+
+
+\begin_inset LatexCommand \index{template}
+
+\end_inset 
+
+(template) käyttäen mahdollistaisi erillisen ulkoasun räätälöinnin, joka
+ on edellytys integroitaessa Mappia osaksi suurempaa mahdollisesti jo olemassaol
+evaa järjestelmää.
+\layout Standard
+
+Roskakori -toiminnon toteuttamiseen on useitakin teknisiä vaihtoehtoja.
+ Poistamisen sijaan tietoja voitaisiin esimerkiksi siirtä erilliseen roskis-tiet
+okantaan tai avainkentän arvo voitaisiin muuttaa negatiiviseksi.
+ Peruuta-toiminto taas nojaa pitkälti roskakoriin, eikä ole konstikas toteutetta
+van kunhan roskakori vain ensin toimii.
+\layout Standard
+
+
+\begin_inset LatexCommand \printindex{}
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset LatexCommand \listoffigures{}
+
+\end_inset 
+
+
+\layout Bibliography
+\bibitem [1]{1}
+
+James Henstridge, 
+\begin_inset Quotes eld
+\end_inset 
+
+The WWW-SQL Home Page
+\begin_inset Quotes erd
+\end_inset 
+
+, saatavilla www-muodossa.
+ 
+\family typewriter 
+<URL: http://www.daa.com.au/~james/www-sql/>
+\family sans 
+, viitattu 8.4.2002
+\layout Bibliography
+\bibitem [2]{2}
+
+
+\family sans 
+Apache Software Foundation, PHP-projektin kotisivu, 
+\family typewriter 
+<URL: http://www.php.net/>
+\family default 
+, viitattu 8.4.2002
+\layout Bibliography
+\bibitem [3]{3}
+
+
+\family sans 
+Apache Software Foundation, HTTP Server -projektin kotisivu, 
+\family typewriter 
+<URL: http://httpd.apache.org/>
+\family sans 
+, viitattu 8.4.2002
+\layout Bibliography
+\bibitem [4]{4}
+
+MySQL AB, MySQL Database Server, 
+\family typewriter 
+<URL: http://www.mysql.com/>
+\family sans 
+, viitattu 8.4.2002
+\the_end
